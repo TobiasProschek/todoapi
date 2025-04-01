@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: ToDo-API
+  title: Todo-API
   version: 0.0.1
 tags:
   - name: todo
@@ -9,7 +9,7 @@ paths:
     post:
       tags:
         - todo
-      summary: Create a new ToDo
+      summary: Create a new todo
       description: Create a new todo
       operationId: addToDO
       requestBody:
@@ -17,20 +17,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ToDo'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/ToDo'
+              $ref: '#/components/schemas/Todo'
       responses:
-        '200':
-          description: Successful operation
+        '201':
+          description: Todo item was created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ToDo'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/ToDo'
+                $ref: '#/components/schemas/Todo'
         '400':
           description: Invalid input
         '422':
@@ -39,9 +33,9 @@ paths:
     get:
       tags:
         - todo
-      summary: Find ToDo's by status
-      description: Search for ToDo's using the Status
-      operationId: findToDoByStatus
+      summary: Find todo by status
+      description: Search for todo using the Status
+      operationId: findTodoByStatus
       parameters:
         - name: status
           in: query
@@ -64,23 +58,18 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ToDo'
-            application/xml:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ToDo'
+                  $ref: '#/components/schemas/Todo'
         '400':
           description: Invalid status value
   /todo/{taskID}:
     get:
       tags:
         - todo
-      summary: Find ToDo by its ID
-      description: Return a single ToDo
-      operationId: getToDoByID
+      summary: Get todo by its ID
+      description: Return a single todo
+      operationId: getTodoByID
       parameters:
-        - name: taskID
+        - name: todoID
           in: path
           description: ID of todo to return
           required: true
@@ -93,24 +82,21 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ToDo'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/ToDo'
+                $ref: '#/components/schemas/Todo'
         '400':
           description: Invalid ID supplied
         '404':
-          description: ToDo not found
+          description: Todo not found
     put:
       tags:
         - todo
-      summary: Update ToDo by its ID
-      description: Update ToDo
-      operationId: updateToDo
+      summary: Update Todo by its ID
+      description: Update Todo
+      operationId: updateTodo
       parameters:
-        - name: taskID
+        - name: todoID
           in: path
-          description: ID of the ToDo to update
+          description: ID of the Todo to update
           required: true
           schema:
             type: integer
@@ -119,34 +105,28 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ToDo'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/ToDo'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/ToDo'
+              $ref: '#/components/schemas/Todo'
       responses:
         '200':
           description: successful operation
     delete:
       tags:
         - todo
-      summary: Delete ToDo by its ID
-      description: Delete ToDo using its ID
-      operationId: deleteToDo
+      summary: Delete todo by its ID
+      description: Delete todo using its ID
+      operationId: deleteTodo
       parameters:
-        - name: taskID
+        - name: todoID
           in: path
-          description: ToDo id to delete
+          description: todo id to delete
           required: true
           schema:
             type: integer
       responses:
         '200':
-          description: ToDo deleted successfully
+          description: todo deleted successfully
         '400':
-          description: Invalid ToDo value
+          description: Invalid todo value
 components:
   schemas:
     ToDo:
@@ -161,7 +141,7 @@ components:
         title:
           type: string
           example: create a todo
-        shorttext:
+        description:
           type: string
           example: Blablabla blsalal
         priority:
@@ -178,5 +158,3 @@ components:
             - PROGRESS
             - CLOSED
           example: WAITING
-      xml:
-        name: todo

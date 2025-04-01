@@ -15,7 +15,7 @@ dependencies {
     implementation("com.squareup.moshi:moshi:1.15.0")
     implementation("com.squareup.moshi:moshi-kotlin:1.15.0")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb:2.3.0.RELEASE")
-//    implementation("io.mongodb:kotlin-driver:22.1.0")
+    implementation("org.mongodb:mongodb-driver-kotlin-coroutine:4.10.1")
     testImplementation(kotlin("test"))
 }
 
@@ -27,7 +27,7 @@ kotlin {
 }
 
 openApiGenerate{
-    inputSpec.set("$rootDir/openapi/openapi_generate.yaml")
+    inputSpec.set("$rootDir/openapi/todo.api.yaml")
     generatorName.set("kotlin")
 }
 
