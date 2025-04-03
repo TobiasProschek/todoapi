@@ -1,6 +1,3 @@
-import org.openapitools.client.infrastructure.*
-import org.openapitools.client.models.*
-import org.openapitools.client.apis.TodoApi
 import com.mongodb.kotlin.client.coroutine.MongoClient
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import kotlinx.coroutines.runBlocking

@@ -38,7 +38,3 @@ sourceSets {
         }
     }
 }
-
-//tasks.compileKotlin {
-//    dependsOn("openAPIGenerate")
-//}

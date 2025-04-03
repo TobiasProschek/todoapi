@@ -11,7 +11,7 @@ paths:
         - todo
       summary: Create a new todo
       description: Create a new todo
-      operationId: addToDO
+      operationId: addTodo
       requestBody:
         description: Create a new todo
         content:
@@ -129,9 +129,14 @@ paths:
           description: Invalid todo value
 components:
   schemas:
-    ToDo:
+    Todo:
+      description: this todo object is an object to save todos
       required:
+        - id
         - title
+        - description
+        - priority
+        - status
       type: object
       properties:
         id:
