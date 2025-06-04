@@ -1,5 +1,6 @@
 package com.proschek.model
 
+import com.fasterxml.jackson.databind.ser.std.UUIDSerializer
 import kotlinx.serialization.Serializable
 import java.util.UUID
 
@@ -9,8 +10,7 @@ enum class Status {
 
 @Serializable
 data class Todo(
-    val id: String = UUID.randomUUID().toString(),
+    val id: ID = ID(),
     val title: String,
     val status: Status
-
 )
