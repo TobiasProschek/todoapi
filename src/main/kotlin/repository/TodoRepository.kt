@@ -1,21 +1,21 @@
 package com.proschek.repository
 
 import com.mongodb.client.model.Filters
-import com.mongodb.kotlin.client.coroutine.FindFlow
-import com.proschek.collection
+import com.proschek.config.collection
+import com.proschek.model.CreateTodoRequest
 import com.proschek.model.Todo
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
 
 interface ITodoRepository {
     suspend fun allTodos(): List<Todo>
-    suspend fun todoById(id: Int): Todo?
-    suspend fun addTodo(todo: Todo): Todo
-    suspend fun updateTodo(id: Int, todo: Todo): Todo?
-    suspend fun removeTodo(id: Int): Boolean
+    suspend fun todoById(id: String): Todo?
+    suspend fun addTodo(request: CreateTodoRequest): Todo
+    suspend fun updateTodo(id: String, todo: Todo): Todo?
+    suspend fun removeTodo(id: String): Boolean
 }
 
-class TodoRepository: ITodoRepository  {
+class TodoRepository : ITodoRepository {
     override suspend fun allTodos(): List<Todo> {
         return try {
             collection.find().toList()
@@ -25,21 +25,23 @@ class TodoRepository: ITodoRepository  {
         }
     }
 
-    override suspend fun todoById(id: Int): Todo? {
+    override suspend fun todoById(id: String): Todo? {
         return try {
-            collection.find(Filters.eq("id", id)).firstOrNull()
+            collection.find(Filters.eq("_id", id)).firstOrNull()
         } catch (e: Exception) {
             println("Database error: ${e.message}")
             throw e
         }
     }
 
-    override suspend fun addTodo(todo: Todo): Todo {
+    // Update your repository interface/implementation
+    override suspend fun addTodo(request: CreateTodoRequest): Todo {
+        val todo = Todo.create(request.title, request.status)
         collection.insertOne(todo)
         return todo
     }
 
-    override suspend fun updateTodo(id: Int, todo: Todo): Todo? {
+    override suspend fun updateTodo(id: String, todo: Todo): Todo? {
         return try {
             val result = collection.replaceOne(
                 Filters.eq("id", id),
@@ -57,7 +59,7 @@ class TodoRepository: ITodoRepository  {
     }
 
 
-    override suspend fun removeTodo(id: Int): Boolean {
+    override suspend fun removeTodo(id: String): Boolean {
         return try {
             val result = collection.deleteOne(Filters.eq("id", id))
             result.deletedCount == 1L
@@ -66,4 +68,8 @@ class TodoRepository: ITodoRepository  {
             throw e
         }
     }
+}
+
+suspend fun clearAllTodos() {
+    collection.deleteMany(Filters.empty())
 }
