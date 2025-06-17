@@ -11,7 +11,7 @@ enum class Status {
 @Serializable
 data class Todo(
     @Contextual
-    val id: String = "",
+    val id: String,
     val title: String,
     val status: Status
 ) {
