@@ -5,7 +5,9 @@ import com.mongodb.kotlin.client.coroutine.MongoCollection
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import com.proschek.model.Todo
 import com.typesafe.config.ConfigFactory
-import io.ktor.server.application.*
+import io.ktor.server.application.Application
+import io.ktor.server.application.log
+import io.ktor.server.application.ApplicationStopped
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual

@@ -1,6 +1,7 @@
 package com.proschek.repository
 
 import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Updates
 import com.proschek.config.collection
 import com.proschek.model.CreateTodoRequest
 import com.proschek.model.Todo
@@ -27,28 +28,35 @@ class TodoRepository : ITodoRepository {
 
     override suspend fun todoById(id: String): Todo? {
         return try {
-            collection.find(Filters.eq("_id", id)).firstOrNull()
+            collection.find(Filters.eq("id", id)).firstOrNull()
         } catch (e: Exception) {
             println("Database error: ${e.message}")
             throw e
         }
     }
 
-    // Update your repository interface/implementation
     override suspend fun addTodo(request: CreateTodoRequest): Todo {
-        val todo = Todo.create(request.title, request.status)
-        collection.insertOne(todo)
-        return todo
+        return try {
+            val todo = Todo.create(request.title, request.status)
+            collection.insertOne(todo)
+            todo
+        } catch (e: Exception) {
+            println("Error adding todo: ${e.message}")
+            throw e
+        }
     }
 
     override suspend fun updateTodo(id: String, todo: Todo): Todo? {
         return try {
-            val result = collection.replaceOne(
+            val result = collection.updateOne(
                 Filters.eq("id", id),
-                todo
+                Updates.combine(
+                    Updates.set("title", todo.title),
+                    Updates.set("status", todo.status)
+                )
             )
             if (result.modifiedCount == 1L) {
-                todo
+                todo.copy(id = id)
             } else {
                 null
             }

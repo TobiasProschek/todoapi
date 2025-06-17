@@ -1,5 +1,6 @@
 package com.proschek.plugins
 
+import com.proschek.repository.TodoRepository
 import com.proschek.routes.todoRoutes
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -26,6 +27,8 @@ fun Application.configureRouting() {
         // Static plugin. Try to access `/static/index.html`
         staticResources("/static", "static")
 
-        todoRoutes()
+        todoRoutes(
+            todoRepository = TodoRepository()
+        )
     }
 }

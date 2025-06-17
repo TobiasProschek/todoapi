@@ -1,16 +1,15 @@
-openapi: 3.0.3
+openapi: 3.1.1
 info:
   title: Todo-API
+  description: A comprehensive REST API for managing todos with full CRUD operations.
   version: 0.0.1
 servers:
   - url: "http://127.0.0.1:8080"
     description: Local development
-  - url: "http://localhost:8080"
-    description: Local development
 tags:
   - name: todo
 paths:
-  /todos:
+  /api/todos:
     post:
       tags:
         - todo
@@ -48,7 +47,6 @@ paths:
           required: true
           schema:
             type: integer
-            format: int64
       responses:
         '200':
           description: successful operation
@@ -82,6 +80,10 @@ paths:
       responses:
         '200':
           description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/componemts/schemas/Todo'
     delete:
       tags:
         - todo
@@ -107,32 +109,22 @@ components:
       required:
         - id
         - title
-        - description
-        - priority
         - status
       type: object
       properties:
         id:
-          type: integer
-          format: int64
-          example: 1
+          type: String
+          example: 5ec20b6f-eb01-47cd-845f-1ee842d8cde2
         title:
           type: string
           example: create a todo
         description:
           type: string
           example: Blablabla blsalal
-        priority:
-          type: integer
-          format: int32
-          minimum: 1
-          maximum: 4
-          example: 1
         status:
           type: string
           enum:
             - OPEN
-            - WAITING
-            - PROGRESS
-            - CLOSED
-          example: WAITING
+            - IN_PROGRESS
+            - DONE
+          example: IN_PROGRESS

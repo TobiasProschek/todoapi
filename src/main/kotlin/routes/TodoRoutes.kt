@@ -1,18 +1,18 @@
 package com.proschek.routes
 
 import com.proschek.model.CreateTodoRequest
+import com.proschek.model.Status
 import com.proschek.model.Todo
 import com.proschek.repository.TodoRepository
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import com.proschek.utils.toUUIDOrNull
 
-fun Route.todoRoutes() {
-    val todoRepository = TodoRepository()
-
+fun Route.todoRoutes(todoRepository: TodoRepository) {
     route("/api/todos") {
-        // GET /api/todos - Get all todos
+    // GET /api/todos - Get all todos
         get {
             try {
                 println("Starting to fetch todos...") // Add logging
@@ -26,11 +26,16 @@ fun Route.todoRoutes() {
             }
         }
 
+        // POST /api/todos - Create a new todo
         post {
             try {
                 val request = call.receive<CreateTodoRequest>()
                 if (request.title.isBlank()) {
                     call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Title is required"))
+                    return@post
+                }
+                if (request.status !in Status.entries) {
+                    call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Status must be valid"))
                     return@post
                 }
 
@@ -44,12 +49,13 @@ fun Route.todoRoutes() {
         // GET /api/todos/{id} - Get a specific todo
         get("/{id}") {
             val id = call.parameters["id"]
-            if (id == null) {
+            val uuid = id.toUUIDOrNull()
+            if (uuid == null) {
                 call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Invalid ID"))
                 return@get
             }
 
-            val todo = todoRepository.todoById(id)
+            val todo = todoRepository.todoById(id.toString())
             if (todo != null) {
                 call.respond(todo)
             } else {
@@ -57,9 +63,11 @@ fun Route.todoRoutes() {
             }
         }
 
+    // DELETE /api/todos/{id} - Delete a specific todo
         delete("/{id}") {
-            val id = call.parameters["id"]?.toIntOrNull()
-            if (id == null) {
+            val id = call.parameters["id"]
+            val uuid = id.toUUIDOrNull()
+            if (uuid == null) {
                 call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Invalid ID"))
                 return@delete
             }
@@ -74,12 +82,13 @@ fun Route.todoRoutes() {
 
         // PUT /api/todos/{id} - Update a specific todo
         put("/{id}") {
-            val id = call.parameters["id"]?.toIntOrNull()
-            if (id == null) {
+            val id = call.parameters["id"]
+            val uuid = id.toUUIDOrNull()
+
+            if (uuid == null) {
                 call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Invalid ID"))
                 return@put
             }
-
             val request = call.receive<Todo>()
             println("Received request: $request") // Debug log
 
