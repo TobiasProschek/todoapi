@@ -2,7 +2,7 @@ package com.proschek.model
 
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import java.util.*
+import java.util.UUID
 
 enum class Status {
     TODO, IN_PROGRESS, DONE
@@ -11,7 +11,7 @@ enum class Status {
 @Serializable
 data class Todo(
     @Contextual
-    val id: String = UUID.randomUUID().toString(),
+    val id: String = "",
     val title: String,
     val status: Status
 ) {
