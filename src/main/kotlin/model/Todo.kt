@@ -1,6 +1,5 @@
 package com.proschek.model
 
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import java.util.UUID
 
@@ -10,8 +9,7 @@ enum class Status {
 
 @Serializable
 data class Todo(
-    @Contextual
-    val id: String,
+    val id: String? = null,
     val title: String,
     val status: Status
 ) {
