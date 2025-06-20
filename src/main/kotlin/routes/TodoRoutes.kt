@@ -42,7 +42,8 @@ fun Route.todoRoutes(todoRepository: TodoRepository) {
                 val todo = todoRepository.addTodo(request)
                 call.respond(HttpStatusCode.Created, todo)
             } catch (e: Exception) {
-                call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "Failed to create todo"))
+                println("Error occurred: ${e.message}") // Log the actual error
+                call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "Failed to create todo: ${e.message}"))
             }
         }
 
@@ -63,8 +64,8 @@ fun Route.todoRoutes(todoRepository: TodoRepository) {
                     call.respond(HttpStatusCode.NotFound, mapOf("error" to "Todo not found"))
                 }
             } catch (e: Exception) {
-                call.respond(
-                HttpStatusCode.InternalServerError, mapOf("error" to "An unexpected error occurred: ${e.message}"))
+                println("Error occurred: ${e.message}") // Log the actual error
+                call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "Failed to retrieve todo from database: ${e.message}"))
             }
         }
 
@@ -85,8 +86,8 @@ fun Route.todoRoutes(todoRepository: TodoRepository) {
                     call.respond(HttpStatusCode.NotFound, mapOf("error" to "Todo not found"))
                 }
             } catch (e: Exception) {
-                call.respond(
-                HttpStatusCode.InternalServerError, mapOf("error" to "An unexpected error occurred: ${e.message}"))
+                println("Error occurred: ${e.message}") // Log the actual error
+                call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "Failed to delete todo from database: ${e.message}"))
             }
         }
 
@@ -112,8 +113,8 @@ fun Route.todoRoutes(todoRepository: TodoRepository) {
                     call.respond(HttpStatusCode.NotFound, mapOf("error" to "Todo not found"))
                 }
             } catch (e: Exception) {
-                call.respond(
-                HttpStatusCode.InternalServerError, mapOf("error" to "An unexpected error occurred: ${e.message}"))
+                println("Error occurred: ${e.message}") // Log the actual error
+                call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "Failed to update todo in the database: ${e.message}"))
             }
         }
 
