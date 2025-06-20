@@ -12,7 +12,7 @@ import com.proschek.utils.toUUIDOrNull
 
 fun Route.todoRoutes(todoRepository: TodoRepository) {
     route("/api/todos") {
-    // GET /api/todos - Get all todos
+        // GET /api/todos - Get all todos
         get {
             try {
                 println("Starting to fetch todos...") // Add logging
@@ -48,58 +48,74 @@ fun Route.todoRoutes(todoRepository: TodoRepository) {
 
         // GET /api/todos/{id} - Get a specific todo
         get("/{id}") {
-            val id = call.parameters["id"]
-            val uuid = id.toUUIDOrNull()
-            if (uuid == null) {
-                call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Invalid ID"))
-                return@get
-            }
+            try {
+                val id = call.parameters["id"]
+                val uuid = id.toUUIDOrNull()
+                if (uuid == null) {
+                    call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Invalid ID"))
+                    return@get
+                }
 
-            val todo = todoRepository.todoById(id.toString())
-            if (todo != null) {
-                call.respond(todo)
-            } else {
-                call.respond(HttpStatusCode.NotFound, mapOf("error" to "Todo not found"))
+                val todo = todoRepository.todoById(id.toString())
+                if (todo != null) {
+                    call.respond(todo)
+                } else {
+                    call.respond(HttpStatusCode.NotFound, mapOf("error" to "Todo not found"))
+                }
+            } catch (e: Exception) {
+                call.respond(
+                HttpStatusCode.InternalServerError, mapOf("error" to "An unexpected error occurred: ${e.message}"))
             }
         }
 
-    // DELETE /api/todos/{id} - Delete a specific todo
+        // DELETE /api/todos/{id} - Delete a specific todo
         delete("/{id}") {
-            val id = call.parameters["id"]
-            val uuid = id.toUUIDOrNull()
-            if (uuid == null) {
-                call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Invalid ID"))
-                return@delete
-            }
+            try {
+                val id = call.parameters["id"]
+                val uuid = id.toUUIDOrNull()
+                if (uuid == null) {
+                    call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Invalid ID"))
+                    return@delete
+                }
 
-            val wasDeleted = todoRepository.removeTodo(id.toString())
-            if (wasDeleted) {
-                call.respond(HttpStatusCode.NoContent)
-            } else {
-                call.respond(HttpStatusCode.NotFound, mapOf("error" to "Todo not found"))
+                val wasDeleted = todoRepository.removeTodo(id.toString())
+                if (wasDeleted) {
+                    call.respond(HttpStatusCode.NoContent)
+                } else {
+                    call.respond(HttpStatusCode.NotFound, mapOf("error" to "Todo not found"))
+                }
+            } catch (e: Exception) {
+                call.respond(
+                HttpStatusCode.InternalServerError, mapOf("error" to "An unexpected error occurred: ${e.message}"))
             }
         }
 
         // PUT /api/todos/{id} - Update a specific todo
         put("/{id}") {
-            val id = call.parameters["id"]
-            val uuid = id.toUUIDOrNull()
+            try {
+                val id = call.parameters["id"]
+                val uuid = id.toUUIDOrNull()
 
-            if (uuid == null) {
-                call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Invalid ID"))
-                return@put
-            }
-            val request = call.receive<Todo>()
-            println("Received request: $request") // Debug log
+                if (uuid == null) {
+                    call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Invalid ID"))
+                    return@put
+                }
+                val request = call.receive<Todo>()
+                println("Received request: $request") // Debug log
 
-            val updatedTodo = todoRepository.updateTodo(id.toString(), request)
-            println("Updated todo result: $updatedTodo") // Debug log
+                val updatedTodo = todoRepository.updateTodo(id.toString(), request)
+                println("Updated todo result: $updatedTodo") // Debug log
 
-            if (updatedTodo != null) {
-                call.respond(updatedTodo)
-            } else {
-                call.respond(HttpStatusCode.NotFound, mapOf("error" to "Todo not found"))
+                if (updatedTodo != null) {
+                    call.respond(updatedTodo)
+                } else {
+                    call.respond(HttpStatusCode.NotFound, mapOf("error" to "Todo not found"))
+                }
+            } catch (e: Exception) {
+                call.respond(
+                HttpStatusCode.InternalServerError, mapOf("error" to "An unexpected error occurred: ${e.message}"))
             }
         }
+
     }
 }

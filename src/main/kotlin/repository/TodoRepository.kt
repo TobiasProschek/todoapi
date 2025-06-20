@@ -5,6 +5,7 @@ import com.mongodb.client.model.Updates
 import com.proschek.config.collection
 import com.proschek.model.CreateTodoRequest
 import com.proschek.model.Todo
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
 
