@@ -1,4 +1,4 @@
-openapi: 3.1.1
+openapi: 3.0.1
 info:
   title: Todo-API
   description: A comprehensive REST API for managing todos with full CRUD operations.
@@ -33,7 +33,7 @@ paths:
           description: Invalid input
         '422':
           description: Validation exception
-  /todos/{id}:
+  /api/todos/{id}:
     get:
       tags:
         - todo
@@ -46,7 +46,7 @@ paths:
           description: ID of todo to return
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         '200':
           description: successful operation
@@ -70,7 +70,7 @@ paths:
           description: ID of the Todo to update
           required: true
           schema:
-            type: integer
+            type: string
       requestBody:
         description: Update an existing todo in the store
         content:
@@ -83,7 +83,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/componemts/schemas/Todo'
+                $ref: '#/components/schemas/Todo'
     delete:
       tags:
         - todo
@@ -96,7 +96,7 @@ paths:
           description: todo id to delete
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         '200':
           description: todo deleted successfully
@@ -113,14 +113,11 @@ components:
       type: object
       properties:
         id:
-          type: String
+          type: string
           example: 5ec20b6f-eb01-47cd-845f-1ee842d8cde2
         title:
           type: string
           example: create a todo
-        description:
-          type: string
-          example: Blablabla blsalal
         status:
           type: string
           enum:
