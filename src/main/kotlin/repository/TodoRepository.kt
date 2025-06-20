@@ -22,7 +22,7 @@ class TodoRepository : ITodoRepository {
         return try {
             collection.find().toList()
         } catch (e: Exception) {
-            println("Database error: ${e.message}")
+            println("Failed to get todo from databse: ${e.message}")
             throw e
         }
     }
@@ -31,7 +31,7 @@ class TodoRepository : ITodoRepository {
         return try {
             collection.find(Filters.eq("id", id)).firstOrNull()
         } catch (e: Exception) {
-            println("Database error: ${e.message}")
+            println("Failed to get todo using id from database: ${e.message}")
             throw e
         }
     }
@@ -42,7 +42,7 @@ class TodoRepository : ITodoRepository {
             collection.insertOne(todo)
             todo
         } catch (e: Exception) {
-            println("Error adding todo: ${e.message}")
+            println("Failed to add todo to database: ${e.message}")
             throw e
         }
     }
@@ -62,7 +62,7 @@ class TodoRepository : ITodoRepository {
                 null
             }
         } catch (e: Exception) {
-            println("Database error: ${e.message}")
+            println("Failed to update todo to database: ${e.message}")
             throw e
         }
     }
@@ -73,7 +73,7 @@ class TodoRepository : ITodoRepository {
             val result = collection.deleteOne(Filters.eq("id", id))
             result.deletedCount == 1L
         } catch (e: Exception) {
-            println("Database error: ${e.message}")
+            println("Failed to remove todo from database: ${e.message}")
             throw e
         }
     }
