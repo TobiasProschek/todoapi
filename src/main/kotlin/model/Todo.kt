@@ -24,7 +24,7 @@ data class Todo(
                 id = UUID.randomUUID().toString(),
                 title = title,
                 status = status,
-                createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                createdAt = Clock.System.todayIn(TimeZone.UTC)
             )
         }
     }
