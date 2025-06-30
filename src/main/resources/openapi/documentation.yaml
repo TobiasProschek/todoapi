@@ -1,23 +1,127 @@
-openapi: "3.0.3"
+openapi: 3.0.1
 info:
-  title: "Application API"
-  description: "Application API"
-  version: "1.0.0"
+  title: Todo-API
+  description: A comprehensive REST API for managing todos with full CRUD operations.
+  version: 0.0.1
 servers:
-  - url: "http://0.0.0.0:8080"
+  - url: "http://127.0.0.1:8080"
+    description: Local development
+tags:
+  - name: todo
 paths:
-  /:
-    get:
-      description: "Hello World!"
+  /api/todos:
+    post:
+      tags:
+        - todo
+      summary: Create a new todo
+      description: Create a new todo
+      operationId: addTodo
+      requestBody:
+        description: Create a new todo
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Todo'
       responses:
-        "200":
-          description: "OK"
+        '201':
+          description: Todo item was created successfully
           content:
-            text/plain:
+            application/json:
               schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "Hello World!"
+                $ref: '#/components/schemas/Todo'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+  /api/todos/{id}:
+    get:
+      tags:
+        - todo
+      summary: Get todo by its ID
+      description: Return a single todo
+      operationId: getTodoByID
+      parameters:
+        - name: id
+          in: path
+          description: ID of todo to return
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Todo not found
+    put:
+      tags:
+        - todo
+      summary: Update Todo by its ID
+      description: Update Todo
+      operationId: updateTodo
+      parameters:
+        - name: id
+          in: path
+          description: ID of the Todo to update
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update an existing todo in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Todo'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+    delete:
+      tags:
+        - todo
+      summary: Delete todo by its ID
+      description: Delete todo using its ID
+      operationId: deleteTodo
+      parameters:
+        - name: id
+          in: path
+          description: todo id to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: todo deleted successfully
+        '400':
+          description: Invalid todo value
 components:
-  schemas: {}
+  schemas:
+    Todo:
+      description: this todo object is an object to save todos
+      required:
+        - id
+        - title
+        - status
+      type: object
+      properties:
+        id:
+          type: string
+          example: 5ec20b6f-eb01-47cd-845f-1ee842d8cde2
+        title:
+          type: string
+          example: create a todo
+        status:
+          type: string
+          enum:
+            - OPEN
+            - IN_PROGRESS
+            - DONE
+          example: IN_PROGRESS
