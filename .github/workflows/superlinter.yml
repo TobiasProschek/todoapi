@@ -2,6 +2,10 @@ name: Super-Linter
 
 on: push
 
+permissions:
+  contents: read
+  statuses: write
+
 jobs:
   super-lint:
     name: Lint code base
@@ -9,9 +13,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Run Super-Linter
-        uses: super-linter/super-linter@v8.0.0
+        uses: super-linter/super-linter@v7.1.0
         env:
           DEFAULT_BRANCH: master
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          KOTLIN_KTLINT_CONFIG_FILE: .editorconfig
+          FILTER_REGEX_EXCLUDE: "gradlew"
+          VALIDATE_HTML_PRETTIER: false

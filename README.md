@@ -13,7 +13,7 @@ Here are some useful links to get you started:
 Here's a list of features included in this project:
 
 | Name                                                                   | Description                                                                        |
-| ------------------------------------------------------------------------|------------------------------------------------------------------------------------ |
+| ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
 | [Routing](https://start.ktor.io/p/routing)                             | Provides a structured routing DSL                                                  |
 | [Status Pages](https://start.ktor.io/p/status-pages)                   | Provides exception handling for routes                                             |
 | [Swagger](https://start.ktor.io/p/swagger)                             | Serves Swagger UI for your project                                                 |
@@ -27,7 +27,7 @@ Here's a list of features included in this project:
 To build or run the project, use one of the following tasks:
 
 | Task                          | Description                                                          |
-| -------------------------------|---------------------------------------------------------------------- |
+| ----------------------------- | -------------------------------------------------------------------- |
 | `./gradlew test`              | Run the tests                                                        |
 | `./gradlew build`             | Build everything                                                     |
 | `buildFatJar`                 | Build an executable JAR of the server with all dependencies included |
@@ -38,8 +38,7 @@ To build or run the project, use one of the following tasks:
 
 If the server starts successfully, you'll see the following output:
 
-```
+```console
 2024-12-04 14:32:45.584 [main] INFO  Application - Application started in 0.303 seconds.
 2024-12-04 14:32:45.682 [main] INFO  Application - Responding at http://0.0.0.0:8080
 ```
-
