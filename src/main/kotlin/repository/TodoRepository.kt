@@ -7,6 +7,8 @@ import com.proschek.model.CreateTodoRequest
 import com.proschek.model.Todo
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
+import com.proschek.exception.TodoMongoException
+import com.proschek.exception.TodoNotFoundException
 
 interface ITodoRepository {
     suspend fun allTodos(): List<Todo>
@@ -21,8 +23,7 @@ class TodoRepository : ITodoRepository {
         return try {
             collection.find().toList()
         } catch (e: Exception) {
-            println("Failed to get todo from databse: ${e.message}")
-            throw e
+            throw TodoMongoException("Failed to get data from the database: ${e.message}")
         }
     }
 
@@ -30,8 +31,7 @@ class TodoRepository : ITodoRepository {
         return try {
             collection.find(Filters.eq("id", id)).firstOrNull()
         } catch (e: Exception) {
-            println("Failed to get todo using id from database: ${e.message}")
-            throw e
+            throw TodoMongoException("Failed to get todo using id from database: ${e.message}")
         }
     }
 
@@ -41,8 +41,7 @@ class TodoRepository : ITodoRepository {
             collection.insertOne(todo)
             todo
         } catch (e: Exception) {
-            println("Failed to add todo to database: ${e.message}")
-            throw e
+            throw TodoMongoException("Failed to add Todo to database: ${e.message}")
         }
     }
 
@@ -58,26 +57,19 @@ class TodoRepository : ITodoRepository {
             if (result.modifiedCount == 1L) {
                 collection.find(Filters.eq("id", id)).firstOrNull()
             } else {
-                null
+                throw TodoNotFoundException("Todo not Found")
             }
         } catch (e: Exception) {
-            println("Failed to update todo to database: ${e.message}")
-            throw e
+            throw TodoMongoException("Failed to update Todo in the database: ${e.message}")
         }
     }
-
 
     override suspend fun removeTodo(id: String): Boolean {
         return try {
             val result = collection.deleteOne(Filters.eq("id", id))
             result.deletedCount == 1L
         } catch (e: Exception) {
-            println("Failed to remove todo from database: ${e.message}")
-            throw e
+            throw TodoMongoException("Failed to remove Todo from databse: ${e.message}")
         }
     }
-}
-
-suspend fun clearAllTodos() {
-    collection.deleteMany(Filters.empty())
 }
