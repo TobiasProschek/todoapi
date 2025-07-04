@@ -7,7 +7,6 @@ import com.proschek.exception.ErrorResponse
 import com.proschek.exception.TodoNotFoundException
 import com.proschek.exception.InvalidTodoDataException
 import com.proschek.exception.TodoAlreadyExistsException
-//import com.proschek.exception.BadRequestException
 import io.ktor.server.plugins.BadRequestException
 import com.proschek.exception.TodoMongoException
 import io.ktor.http.HttpStatusCode
@@ -21,12 +20,12 @@ fun Application.configureStatusPages() {
                 throwable.message?.contains("enum") == true) {
                 call.respond(
                     HttpStatusCode.BadRequest,
-                    ErrorResponse("Status must be one of: TODO, IN_PROGRESS, DONE", status = 400)
+                    ErrorResponse("Status must be one of: TODO, IN_PROGRESS, DONE", status = HttpStatusCode.BadRequest.value)
                 )
             } else {
                 call.respond(
                     HttpStatusCode.BadRequest,
-                    ErrorResponse("Invalid request format", status = 400)
+                    ErrorResponse("Invalid request format", status = HttpStatusCode.BadRequest.value)
                 )
             }
         }
@@ -39,7 +38,6 @@ fun Application.configureStatusPages() {
         }
 
         exception<InvalidTodoDataException> { call, throwable ->
-            println("🎯 InvalidTodoDataException caught: ${throwable.message}")
             call.respond(
                 HttpStatusCode.BadRequest,
                 ErrorResponse("${throwable.message}", status = HttpStatusCode.BadRequest.value)
@@ -59,11 +57,6 @@ fun Application.configureStatusPages() {
             )
         }
         exception<Exception> { call, throwable ->
-            println("🔍 CAUGHT Generic Exception:")
-            println("   Type: ${throwable::class.simpleName}")
-            println("   Full class: ${throwable::class.qualifiedName}")
-            println("   Message: ${throwable.message}")
-            println("   Is InvalidTodoDataException? ${throwable is InvalidTodoDataException}")
             call.respond(
                 HttpStatusCode.InternalServerError,
                 ErrorResponse(message = "An unexpected error occurred", status = HttpStatusCode.InternalServerError.value)
@@ -71,4 +64,3 @@ fun Application.configureStatusPages() {
         }
     }
 }
-
