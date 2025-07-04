@@ -31,7 +31,7 @@ fun Application.configureDatabases() {
     database = mongoClient.getDatabase(databaseUri)
 
 
-    val serializersModule = SerializersModule {
+    SerializersModule {
         contextual(ObjectIdSerializer)
     }
 
