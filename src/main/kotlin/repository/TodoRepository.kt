@@ -9,6 +9,10 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
 import com.proschek.exception.TodoMongoException
 import com.proschek.exception.TodoNotFoundException
+import com.proschek.model.createStatus
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
 
 interface ITodoRepository {
     suspend fun allTodos(): List<Todo>
@@ -37,7 +41,7 @@ class TodoRepository : ITodoRepository {
 
     override suspend fun addTodo(request: CreateTodoRequest): Todo {
         return try {
-            val todo = Todo.create(request.title, request.status)
+            val todo = Todo.create(request.title, request.description,createStatus(request.status))
             collection.insertOne(todo)
             todo
         } catch (e: Exception) {
@@ -51,7 +55,9 @@ class TodoRepository : ITodoRepository {
                 Filters.eq("id", id),
                 Updates.combine(
                     Updates.set("title", todo.title),
-                    Updates.set("status", todo.status)
+                    Updates.set("description", todo.description),
+                    Updates.set("status", todo.status),
+                    Updates.set("updatedAt", Clock.System.todayIn(TimeZone.UTC))
                 )
             )
             if (result.modifiedCount == 1L) {
