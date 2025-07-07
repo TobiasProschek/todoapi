@@ -16,10 +16,10 @@ fun main(args: Array<String>) {
 private val logger = LoggerFactory.getLogger("Application")
 
 fun Application.module() {
-    logger.info("Application module loaded")
     configureHTTP()
     configureSerialization()
     configureStatusPages()
     configureDatabases()
     configureRouting()
+    logger.info("Application module loaded")
 }
