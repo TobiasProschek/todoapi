@@ -5,10 +5,11 @@ import io.ktor.server.application.install
 import io.ktor.server.plugins.statuspages.StatusPages
 import com.proschek.exception.ErrorResponse
 import com.proschek.exception.TodoNotFoundException
-import com.proschek.exception.InvalidTodoDataException
+import com.proschek.exception.TodoInvalidDataException
 import com.proschek.exception.TodoAlreadyExistsException
 import io.ktor.server.plugins.BadRequestException
 import com.proschek.exception.TodoMongoException
+import com.proschek.exception.TodoUUIDCreationException
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.response.respond
 
@@ -33,27 +34,33 @@ fun Application.configureStatusPages() {
         exception<TodoNotFoundException> { call, throwable ->
             call.respond(
                 HttpStatusCode.NotFound,
-                ErrorResponse("${throwable.message}", status = HttpStatusCode.NotFound.value)
+                ErrorResponse(throwable.message.toString(), status = HttpStatusCode.NotFound.value)
             )
         }
 
-        exception<InvalidTodoDataException> { call, throwable ->
+        exception<TodoInvalidDataException> { call, throwable ->
             call.respond(
                 HttpStatusCode.BadRequest,
-                ErrorResponse("${throwable.message}", status = HttpStatusCode.BadRequest.value)
+                ErrorResponse(throwable.message.toString(), status = HttpStatusCode.BadRequest.value)
             )
         }
 
         exception<TodoAlreadyExistsException> { call, throwable ->
             call.respond(
                 HttpStatusCode.Conflict,
-                ErrorResponse("${throwable.message}", status = HttpStatusCode.Conflict.value)
+                ErrorResponse(throwable.message.toString(), status = HttpStatusCode.Conflict.value)
             )
         }
         exception<TodoMongoException> { call, throwable ->
             call.respond(
                 HttpStatusCode.InternalServerError,
-                ErrorResponse("${throwable.message}", status = HttpStatusCode.InternalServerError.value)
+                ErrorResponse(throwable.message.toString(), status = HttpStatusCode.InternalServerError.value)
+            )
+        }
+        exception<TodoUUIDCreationException> { call, throwable ->
+            call.respond(
+                HttpStatusCode.InternalServerError,
+                ErrorResponse(throwable.message.toString(), status = HttpStatusCode.InternalServerError.value)
             )
         }
         exception<Exception> { call, throwable ->

@@ -3,12 +3,12 @@ package com.proschek.repository
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import com.proschek.config.collection
+import com.proschek.exception.TodoMongoException
+import com.proschek.exception.TodoNotFoundException
 import com.proschek.model.CreateTodoRequest
 import com.proschek.model.Todo
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
-import com.proschek.exception.TodoMongoException
-import com.proschek.exception.TodoNotFoundException
 
 interface ITodoRepository {
     suspend fun allTodos(): List<Todo>

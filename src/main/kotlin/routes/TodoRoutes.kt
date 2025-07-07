@@ -1,15 +1,20 @@
 package com.proschek.routes
 
-import com.proschek.exception.InvalidTodoDataException
+import com.proschek.exception.TodoInvalidDataException
 import com.proschek.exception.TodoNotFoundException
 import com.proschek.model.CreateTodoRequest
 import com.proschek.model.Todo
 import com.proschek.repository.TodoRepository
 import com.proschek.utils.toUUIDOrNull
-import io.ktor.http.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.request.receive
+import io.ktor.server.response.respond
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.get
+import io.ktor.server.routing.route
+import io.ktor.server.routing.post
+import io.ktor.server.routing.put
+import io.ktor.server.routing.delete
 
 fun Route.todoRoutes(todoRepository: TodoRepository) {
     route("/api/todos") {
@@ -23,7 +28,7 @@ fun Route.todoRoutes(todoRepository: TodoRepository) {
         post {
             val request = call.receive<CreateTodoRequest>()
             if (request.title.isEmpty()) {
-                throw InvalidTodoDataException("Title is required")
+                throw TodoInvalidDataException("Title is required")
             }
 
             val todo = todoRepository.addTodo(request)
@@ -35,7 +40,7 @@ fun Route.todoRoutes(todoRepository: TodoRepository) {
             val id = call.parameters["id"]
             val uuid = id.toUUIDOrNull()
             if (uuid == null) {
-                throw InvalidTodoDataException("Invalid ID Format")
+                throw TodoInvalidDataException("Invalid ID Format")
             }
 
             val todo = todoRepository.todoById(id.toString()) ?: throw TodoNotFoundException("Todo not Found")
@@ -47,7 +52,7 @@ fun Route.todoRoutes(todoRepository: TodoRepository) {
                 val id = call.parameters["id"]
                 val uuid = id.toUUIDOrNull()
                 if (uuid == null) {
-                    throw InvalidTodoDataException("Invalid Todo ID")
+                    throw TodoInvalidDataException("Invalid Todo ID")
                 }
 
                 val isDeleted = todoRepository.removeTodo(id.toString())
@@ -64,7 +69,7 @@ fun Route.todoRoutes(todoRepository: TodoRepository) {
             val uuid = id.toUUIDOrNull()
 
             if (uuid == null) {
-                throw InvalidTodoDataException("Invalid ID Format")
+                throw TodoInvalidDataException("Invalid ID Format")
             }
             val request = call.receive<Todo>()
 

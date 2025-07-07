@@ -1,4 +1,3 @@
-
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
@@ -26,16 +25,15 @@ dependencies {
     implementation(libs.ktor.server.swagger)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.server.content.negotiation)
-    implementation(libs.mongodb.driver.core)
-    implementation(libs.mongodb.driver.sync)
-    implementation(libs.bson)
     implementation(libs.ktor.server.netty)
     implementation(libs.logback.classic)
     implementation(libs.ktor.server.config.yaml)
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
-    implementation("org.litote.kmongo:kmongo:5.2.0")
-    implementation("org.litote.kmongo:kmongo-coroutine:5.2.0")
-    implementation("org.litote.kmongo:kmongo-async:5.2.0")
-    implementation("org.litote.kmongo:kmongo-coroutine-core:5.2.0")
+    implementation(libs.mongodb.driver.kotlin.coroutine)
+    implementation(libs.mongodb.bson.kotlinx)
+    implementation("org.mongodb:mongodb-driver-kotlin-coroutine:4.11.1")
+    implementation("ch.qos.logback:logback-classic")
+    implementation("com.typesafe:config:1.4.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.5.0")
 }
