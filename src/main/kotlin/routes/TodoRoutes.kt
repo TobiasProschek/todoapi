@@ -37,25 +37,25 @@ fun Route.todoRoutes(todoRepository: TodoRepository) {
 
         // GET /api/todos/{id} - Get a specific todo
         get("/{id}") {
-            val id = call.parameters["id"]
+            val id = call.parameters["id"].toString()
             val uuid = id.toUUIDOrNull()
             if (uuid == null) {
                 throw TodoInvalidDataException("Invalid ID Format")
             }
 
-            val todo = todoRepository.todoById(id.toString()) ?: throw TodoNotFoundException("Todo not Found")
+            val todo = todoRepository.todoById(id) ?: throw TodoNotFoundException("Todo not Found")
             call.respond(todo)
         }
 
         // DELETE /api/todos/{id} - Delete a specific todo
         delete("/{id}") {
-                val id = call.parameters["id"]
+                val id = call.parameters["id"].toString()
                 val uuid = id.toUUIDOrNull()
                 if (uuid == null) {
                     throw TodoInvalidDataException("Invalid Todo ID")
                 }
 
-                val isDeleted = todoRepository.removeTodo(id.toString())
+                val isDeleted = todoRepository.removeTodo(id)
                 if (isDeleted) {
                     call.respond(HttpStatusCode.NoContent)
                 } else {
@@ -65,7 +65,7 @@ fun Route.todoRoutes(todoRepository: TodoRepository) {
 
         // PUT /api/todos/{id} - Update a specific todo
         put("/{id}") {
-            val id = call.parameters["id"]
+            val id = call.parameters["id"].toString()
             val uuid = id.toUUIDOrNull()
 
             if (uuid == null) {
@@ -73,7 +73,7 @@ fun Route.todoRoutes(todoRepository: TodoRepository) {
             }
             val request = call.receive<Todo>()
 
-            val updatedTodo = todoRepository.updateTodo(id.toString(), request)
+            val updatedTodo = todoRepository.updateTodo(id, request)
             if (updatedTodo != null) {
                 call.respond(updatedTodo)
             } else {
