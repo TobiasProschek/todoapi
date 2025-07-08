@@ -1,10 +1,10 @@
 package com.proschek.model
 
 import kotlinx.datetime.Clock
-import kotlinx.serialization.Serializable
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
+import kotlinx.serialization.Serializable
 import java.util.UUID
 
 enum class Status {

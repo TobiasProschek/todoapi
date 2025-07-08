@@ -1,8 +1,12 @@
 package com.proschek.repository
 
 import com.mongodb.client.model.Filters
+import com.mongodb.client.model.FindOneAndUpdateOptions
+import com.mongodb.client.model.ReturnDocument
 import com.mongodb.client.model.Updates
 import com.proschek.config.collection
+import com.proschek.exception.TodoMongoException
+import com.proschek.exception.TodoNotFoundException
 import com.proschek.model.CreateTodoRequest
 import com.proschek.model.Todo
 import kotlinx.coroutines.flow.firstOrNull
@@ -21,8 +25,7 @@ class TodoRepository : ITodoRepository {
         return try {
             collection.find().toList()
         } catch (e: Exception) {
-            println("Failed to get todo from databse: ${e.message}")
-            throw e
+            throw TodoMongoException("Failed to get data from the database: ${e.message}", e)
         }
     }
 
@@ -30,8 +33,7 @@ class TodoRepository : ITodoRepository {
         return try {
             collection.find(Filters.eq("id", id)).firstOrNull()
         } catch (e: Exception) {
-            println("Failed to get todo using id from database: ${e.message}")
-            throw e
+            throw TodoMongoException("Failed to get todo using id from database: ${e.message}", e)
         }
     }
 
@@ -41,43 +43,32 @@ class TodoRepository : ITodoRepository {
             collection.insertOne(todo)
             todo
         } catch (e: Exception) {
-            println("Failed to add todo to database: ${e.message}")
-            throw e
+            throw TodoMongoException("Failed to add Todo to database: ${e.message}", e)
         }
     }
 
     override suspend fun updateTodo(id: String, todo: Todo): Todo? {
         return try {
-            val result = collection.updateOne(
+            val result = collection.findOneAndUpdate(
                 Filters.eq("id", id),
                 Updates.combine(
                     Updates.set("title", todo.title),
                     Updates.set("status", todo.status)
-                )
+                ),
+                FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
             )
-            if (result.modifiedCount == 1L) {
-                collection.find(Filters.eq("id", id)).firstOrNull()
-            } else {
-                null
-            }
+                result ?: throw TodoNotFoundException("Todo not Found")
         } catch (e: Exception) {
-            println("Failed to update todo to database: ${e.message}")
-            throw e
+            throw TodoMongoException("Failed to update Todo in the database: ${e.message}", e)
         }
     }
-
 
     override suspend fun removeTodo(id: String): Boolean {
         return try {
             val result = collection.deleteOne(Filters.eq("id", id))
             result.deletedCount == 1L
         } catch (e: Exception) {
-            println("Failed to remove todo from database: ${e.message}")
-            throw e
+            throw TodoMongoException("Failed to remove Todo from database: ${e.message}", e)
         }
     }
-}
-
-suspend fun clearAllTodos() {
-    collection.deleteMany(Filters.empty())
 }
