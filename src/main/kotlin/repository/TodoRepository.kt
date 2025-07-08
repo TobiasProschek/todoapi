@@ -12,7 +12,6 @@ import com.proschek.model.createStatus
 import com.proschek.model.Todo
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
-
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
@@ -61,7 +60,7 @@ class TodoRepository : ITodoRepository {
                     Updates.set("description", todo.description),
                     Updates.set("status", todo.status),
                     Updates.set("updatedAt", Clock.System.todayIn(TimeZone.UTC))
-                )
+                ),
                         FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
             )
                 result ?: throw TodoNotFoundException("Todo not Found")
