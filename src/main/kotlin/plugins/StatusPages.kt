@@ -1,20 +1,31 @@
 package com.proschek.plugins
 
-import io.ktor.server.application.Application
-import io.ktor.server.application.install
-import io.ktor.server.plugins.statuspages.StatusPages
 import com.proschek.exception.ErrorResponse
 import com.proschek.exception.TodoNotFoundException
-import com.proschek.exception.InvalidTodoDataException
-import com.proschek.exception.TodoAlreadyExistsException
-import io.ktor.server.plugins.BadRequestException
+import com.proschek.exception.TodoInvalidDataException
 import com.proschek.exception.TodoMongoException
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.response.respond
+import io.ktor.server.plugins.BadRequestException
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
+import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.request.uri
+import io.ktor.server.request.httpMethod
+import org.slf4j.LoggerFactory
 
 fun Application.configureStatusPages() {
+
+    val logger = LoggerFactory.getLogger("StatusPages")
+
     install(StatusPages) {
         exception<BadRequestException> { call, throwable ->
+            logger.warn(
+                "Bad request - Method: {}, URI: {}, Message: {}",
+                call.request.httpMethod.value,
+                call.request.uri,
+                throwable.message
+            )
             if (throwable.message?.contains("CreateTodoRequest") == true ||
                 throwable.message?.contains("Status") == true ||
                 throwable.message?.contains("enum") == true) {
@@ -31,32 +42,51 @@ fun Application.configureStatusPages() {
         }
 
         exception<TodoNotFoundException> { call, throwable ->
+            logger.warn(
+                "Todo not found - Method: {}, URI: {}, Message: {}",
+                call.request.httpMethod.value,
+                call.request.uri,
+                throwable.message
+            )
             call.respond(
                 HttpStatusCode.NotFound,
-                ErrorResponse("${throwable.message}", status = HttpStatusCode.NotFound.value)
+                ErrorResponse(throwable.message.toString(), status = HttpStatusCode.NotFound.value)
             )
         }
 
-        exception<InvalidTodoDataException> { call, throwable ->
+        exception<TodoInvalidDataException> { call, throwable ->
+            logger.warn(
+                "Invalid todo data - Method: {}, URI: {}, Message: {}",
+                call.request.httpMethod.value,
+                call.request.uri,
+                throwable.message
+            )
             call.respond(
                 HttpStatusCode.BadRequest,
-                ErrorResponse("${throwable.message}", status = HttpStatusCode.BadRequest.value)
+                ErrorResponse(throwable.message.toString(), status = HttpStatusCode.BadRequest.value)
             )
         }
 
-        exception<TodoAlreadyExistsException> { call, throwable ->
-            call.respond(
-                HttpStatusCode.Conflict,
-                ErrorResponse("${throwable.message}", status = HttpStatusCode.Conflict.value)
-            )
-        }
         exception<TodoMongoException> { call, throwable ->
+            logger.error(
+                "Todo database error - Method: {}, URI: {}, Message: {}",
+                call.request.httpMethod.value,
+                call.request.uri,
+                throwable.message
+            )
             call.respond(
                 HttpStatusCode.InternalServerError,
-                ErrorResponse("${throwable.message}", status = HttpStatusCode.InternalServerError.value)
+                ErrorResponse(throwable.message.toString(), status = HttpStatusCode.InternalServerError.value)
             )
         }
+
         exception<Exception> { call, throwable ->
+            logger.error(
+                "Unexpected error - Method: {}, URI: {}, Message: {}",
+                call.request.httpMethod.value,
+                call.request.uri,
+                throwable.message
+            )
             call.respond(
                 HttpStatusCode.InternalServerError,
                 ErrorResponse(message = "An unexpected error occurred", status = HttpStatusCode.InternalServerError.value)
