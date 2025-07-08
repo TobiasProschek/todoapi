@@ -16,7 +16,7 @@ import org.bson.codecs.kotlinx.ObjectIdSerializer
 lateinit var database: MongoDatabase
 
 // Make collection lazy so it's only initialized when first accessed
- val collection: MongoCollection<Todo> by lazy {
+val collection: MongoCollection<Todo> by lazy {
     database.getCollection("todos", Todo::class.java)
 }
 
@@ -31,7 +31,7 @@ fun Application.configureDatabases() {
     database = mongoClient.getDatabase(databaseUri)
 
 
-    val serializersModule = SerializersModule {
+    SerializersModule {
         contextual(ObjectIdSerializer)
     }
 
