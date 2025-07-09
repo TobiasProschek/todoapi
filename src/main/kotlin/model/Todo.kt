@@ -15,16 +15,21 @@ enum class Status {
 data class Todo(
     val id: String? = null,
     val title: String,
+    val description: String,
     val status: Status,
-    val createdAt: LocalDate? = null
+    val createdAt: LocalDate,
+    val updatedAt: LocalDate?
 ) {
     companion object {
-        fun create(title: String, status: Status): Todo {
+        fun create(title: String, description: String, status: Status): Todo {
+            require(status != Status.DONE) { "Cannot create Todo with DONE status" }
             return Todo(
                 id = UUID.randomUUID().toString(),
                 title = title,
+                description = description,
                 status = status,
-                createdAt = Clock.System.todayIn(TimeZone.UTC)
+                createdAt = Clock.System.todayIn(TimeZone.UTC),
+                updatedAt = null
             )
         }
     }
@@ -33,5 +38,6 @@ data class Todo(
 @Serializable
 data class CreateTodoRequest(
     val title: String,
+    val description: String,
     val status: Status
 )
