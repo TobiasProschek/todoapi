@@ -17,29 +17,20 @@ data class Todo(
     val title: String,
     val description: String,
     val status: Status,
-    val createdAt: LocalDate? = null,
-    val updatedAt: LocalDate? = null
+    val createdAt: LocalDate,
+    val updatedAt: LocalDate?
 ) {
     companion object {
         fun create(title: String, description: String, status: Status): Todo {
+            require(status != Status.DONE) { "Cannot create Todo with DONE status" }
             return Todo(
                 id = UUID.randomUUID().toString(),
                 title = title,
                 description = description,
                 status = status,
-                createdAt = Clock.System.todayIn(TimeZone.UTC)
+                createdAt = Clock.System.todayIn(TimeZone.UTC),
+                updatedAt = null
             )
-        }
-    }
-}
-
-fun createStatus(status: Status): Status {
-    when(status){
-        Status.TODO, Status.IN_PROGRESS -> {
-            return status
-        }
-        Status.DONE -> {
-            throw IllegalArgumentException("Cannot create Todo with DONE status")
         }
     }
 }
