@@ -8,7 +8,6 @@ import com.proschek.config.collection
 import com.proschek.exception.TodoMongoException
 import com.proschek.exception.TodoNotFoundException
 import com.proschek.model.CreateTodoRequest
-import com.proschek.model.createStatus
 import com.proschek.model.Todo
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
@@ -43,7 +42,7 @@ class TodoRepository : ITodoRepository {
 
     override suspend fun addTodo(request: CreateTodoRequest): Todo {
         return try {
-            val todo = Todo.create(request.title, request.description,createStatus(request.status))
+            val todo = Todo.create(request.title, request.description, (request.status))
             collection.insertOne(todo)
             todo
         } catch (e: Exception) {
@@ -61,7 +60,7 @@ class TodoRepository : ITodoRepository {
                     Updates.set("status", todo.status),
                     Updates.set("updatedAt", Clock.System.todayIn(TimeZone.UTC))
                 ),
-                        FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
+                FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
             )
                 result ?: throw TodoNotFoundException("Todo not Found")
         } catch (e: Exception) {
