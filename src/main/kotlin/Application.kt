@@ -1,19 +1,18 @@
 package com.proschek
 
-import com.proschek.repository.MongoTodoRepository
-import com.proschek.repository.TodoRepository
-import com.proschek.routes.configureRouting
+import com.proschek.config.configureDatabases
+import com.proschek.plugins.configureRouting
+import com.proschek.plugins.configureSerialization
 import io.ktor.server.application.*
-import io.ktor.server.netty.EngineMain
+import io.ktor.server.netty.*
 
 fun main(args: Array<String>) {
     EngineMain.main(args)
 }
 
 fun Application.module() {
-    val repository = MongoTodoRepository()
     configureHTTP()
-    configureSerialization(repository)
+    configureSerialization()
     configureDatabases()
-//    configureRouting()
+    configureRouting()
 }
