@@ -9,8 +9,8 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertNotNull
 import org.junit.jupiter.api.assertNull
-import org.testng.annotations.AfterTest
-import org.testng.annotations.BeforeTest
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
@@ -45,7 +45,8 @@ class TodoRepositoryTest {
         )
 
     private fun initializeDatabaseForTests() {
-        val config = ConfigFactory.load("application.conf")
+        val isCI = System.getenv("CI") == "true" || System.getenv("GITHUB_ACTIONS") == "true"
+        val config = if (isCI) ConfigFactory.load("application-ci.conf") else ConfigFactory.load("application.conf")
         val uri = config.getConfig("ktor").getConfig("mongodb").getString("connectionString")
         val databaseName = config.getConfig("ktor").getConfig("mongodb").getString("databaseName")
 

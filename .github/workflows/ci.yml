@@ -1,4 +1,4 @@
-name: CI
+name: CI/CD Pipeline
 
 on:
   push:
@@ -10,45 +10,106 @@ permissions:
   contents: read
   actions: read
   checks: write
+  pull-requests: write
 
 jobs:
-  test:
-    uses: ./.github/workflows/shared-java-setup.yml
-
-  build-and-test:
-    needs: test
+  test-and-build:
     runs-on: ubuntu-latest
 
+    services:
+      mongodb:
+        image: mongo:5.0
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.runCommand({ping: 1})'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: wrapper
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Install MongoDB tools
+        run: |
+          wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+          echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+          sudo apt-get update
+          sudo apt-get install -y mongodb-mongosh
+
+      - name: Wait for MongoDB to be ready
+        run: |
+          echo "Waiting for MongoDB on port 27017..."
+          timeout 60 bash -c 'until nc -z localhost 27017; do sleep 1; done'
+          echo "MongoDB port is open!"
+          sleep 2  # Give it a moment to fully initialize
+
       - name: Run tests
-        run: ./gradlew test --continue
+        run: ./gradlew test --continue --info
+        env:
+          CI: "true"
+          MONGODB_URI: "mongodb://localhost:27017"
+          MONGODB_DATABASE: "ci_test_database"
 
       - name: Publish test results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           files: |
-            build/test-results/test/TEST-*.xml
+            **/build/test-results/test/TEST-*.xml
+          check_name: "Test Results"
+          comment_mode: always
 
-      - name: Run ktlint checks
+      - name: Run Ktlint checks
         run: ./gradlew ktlintCheck
+        continue-on-error: true
 
-      - name: Run detekt analysis
+      - name: Run Detekt analysis
         run: ./gradlew detekt
         continue-on-error: true
 
-      - name: Upload detekt SARIF report
+      - name: Upload Detekt SARIF report
         uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: build/reports/detekt/detekt.sarif
 
       - name: Build project
-        run: ./gradlew build
+        run: ./gradlew build -x test
+        env:
+          CI: "true"
+          MONGODB_URI: "mongodb://localhost:27017"
+          MONGODB_DATABASE: "ci_test_database"
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         if: success()
         with:
-          name: ktor-app
-          path: build/libs/
+          name: ktor-app-${{ github.sha }}
+          path: build/libs/*.jar
+          retention-days: 30

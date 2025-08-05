@@ -35,8 +35,8 @@ import kotlinx.datetime.todayIn
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
-import org.testng.annotations.AfterTest
-import org.testng.annotations.BeforeTest
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -50,11 +50,11 @@ class TodoRoutesTest {
         clearMocks(mockkTodoRepository)
     }
 
-
     @AfterTest
     fun tearDown() {
         clearMocks(mockkTodoRepository)
     }
+
     private fun ApplicationTestBuilder.setupTodoApp() {
         install(ContentNegotiation) {
             json()

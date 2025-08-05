@@ -2,8 +2,8 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
     alias(libs.plugins.kotlin.plugin.serialization)
-    id("io.gitlab.arturbosch.detekt") version "1.23.4"
-    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
+    alias(libs.plugins.detekt)
+    alias(libs.plugins.ktlint)
 }
 
 group = "com.proschek"
@@ -78,10 +78,10 @@ dependencies {
     implementation(libs.mongodb.bson.kotlinx)
     implementation(libs.kotlinx.datetime)
     testImplementation(libs.ktor.server.test.host)
-//    testImplementation(libs.kotlin.test.junit)
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.1")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.10.1")
-    testImplementation("org.junit.platform:junit-platform-launcher:1.10.1")
-    testImplementation("io.mockk:mockk:1.14.4")
-    testImplementation("io.kotest:kotest-assertions-core:5.7.2")
+    testImplementation(libs.junit.jupiter.api)
+    testImplementation(libs.junit.jupiter.engine)
+    testImplementation(libs.junit.platform.launcher)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotest.assertions.core)
+    testImplementation(libs.kotlin.test)
 }

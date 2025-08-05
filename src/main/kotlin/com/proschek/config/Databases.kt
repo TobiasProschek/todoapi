@@ -16,7 +16,8 @@ lateinit var database: MongoDatabase
 /** Configures MongoDB database connection using application configuration. */
 @OptIn(ExperimentalSerializationApi::class)
 fun Application.configureDatabases() {
-    val config = ConfigFactory.load("application.conf")
+    val isCI = System.getenv("CI") == "true" || System.getenv("GITHUB_ACTIONS") == "true"
+    val config = if (isCI) ConfigFactory.load("application-ci.conf") else ConfigFactory.load("application.conf")
     val uri = config.getConfig("ktor").getConfig("mongodb").getString("connectionString")
     val databaseUri = config.getConfig("ktor").getConfig("mongodb").getString("databaseName")
 
