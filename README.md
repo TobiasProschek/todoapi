@@ -1,44 +1,143 @@
-# todo-ktor-app
+# ✅ todo API - Ktor Application
 
-This project was created using the [Ktor Project Generator](https://start.ktor.io).
+A modern RESTful todo API built with [Ktor](https://ktor.io/) and Kotlin, integrating MongoDB, robust error handling, and automatic API documentation.
 
-Here are some useful links to get you started:
+---
 
-- [Ktor Documentation](https://ktor.io/docs/home.html)
-- [Ktor GitHub page](https://github.com/ktorio/ktor)
-- The [Ktor Slack chat](https://app.slack.com/client/T09229ZC6/C0A974TJ9). You'll need to [request an invite](https://surveys.jetbrains.com/s3/kotlin-slack-sign-up) to join.
+## 🚦 Status Workflow
 
-## Features
+`TODO → IN_PROGRESS → DONE`
 
-Here's a list of features included in this project:
+### 📌 Business Rules
 
-| Name                                                                   | Description                                                                        |
-| ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| [Routing](https://start.ktor.io/p/routing)                             | Provides a structured routing DSL                                                  |
-| [Status Pages](https://start.ktor.io/p/status-pages)                   | Provides exception handling for routes                                             |
-| [Swagger](https://start.ktor.io/p/swagger)                             | Serves Swagger UI for your project                                                 |
-| [Static Content](https://start.ktor.io/p/static-content)               | Serves static files from defined locations                                         |
-| [kotlinx.serialization](https://start.ktor.io/p/kotlinx-serialization) | Handles JSON serialization using kotlinx.serialization library                     |
-| [Content Negotiation](https://start.ktor.io/p/content-negotiation)     | Provides automatic content conversion according to Content-Type and Accept headers |
-| [MongoDB](https://start.ktor.io/p/mongodb)                             | Adds MongoDB database to your application                                          |
+- New todos **cannot** be created with `DONE` status
+- Status transitions follow logical order
+- `updatedAt` is automatically updated on changes
 
-## Building & Running
+---
 
-To build or run the project, use one of the following tasks:
+## 🌐 API Endpoints
 
-| Task                          | Description                                                          |
-| ----------------------------- | -------------------------------------------------------------------- |
-| `./gradlew test`              | Run the tests                                                        |
-| `./gradlew build`             | Build everything                                                     |
-| `buildFatJar`                 | Build an executable JAR of the server with all dependencies included |
-| `buildImage`                  | Build the Docker image to use with the fat JAR                       |
-| `publishImageToLocalRegistry` | Publish the Docker image locally                                     |
-| `run`                         | Run the server                                                       |
-| `runDocker`                   | Run using the local Docker image                                     |
+| Method | Endpoint          | Description       | Status Codes  |
+| ------ | ----------------- | ----------------- | ------------- |
+| GET    | `/api/todos`      | Get all todos     | 200           |
+| POST   | `/api/todos`      | Create a new todo | 201, 400      |
+| GET    | `/api/todos/{id}` | Get todo by ID    | 200, 400, 404 |
+| PUT    | `/api/todos/{id}` | Update a todo     | 200, 400, 404 |
+| DELETE | `/api/todos/{id}` | Delete a todo     | 204, 400, 404 |
 
-If the server starts successfully, you'll see the following output:
+---
 
-```console
-2024-12-04 14:32:45.584 [main] INFO  Application - Application started in 0.303 seconds.
-2024-12-04 14:32:45.682 [main] INFO  Application - Responding at http://0.0.0.0:8080
+## 🔁 Example Requests
+
+### Create Todo
+
+```http
+POST /api/todos
+Content-Type: application/json
+
+{
+  "title": "Learn Ktor",
+  "description": "Build a REST API with Ktor framework",
+  "status": "TODO"
+}
 ```
+
+### Update Todo
+
+```http
+PUT /api/todos/{id}
+Content-Type: application/json
+
+{
+  "title": "Learn Ktor",
+  "description": "Build a REST API with Ktor framework",
+  "status": "IN_PROGRESS"
+}
+```
+
+---
+
+## 🏗️ Project Structure
+
+```config
+src/main/kotlin/com/proschek/
+├── config/               # MongoDB configuration
+├── exception/            # Custom error handling
+├── model/                # Data models and DTOs
+├── plugins/              # Ktor plugins (Routing, HTTP, Serialization)
+├── repository/           # MongoDB access layer
+├── routes/               # Todo route handlers
+└── utils/                # UUID validation and helpers
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Java 21+
+- MongoDB 4.4+
+- Gradle 8+
+
+---
+
+## 🧪 Testing
+
+```bash
+./gradlew test
+./gradlew test jacocoTestReport
+```
+
+Test coverage includes unit, integration, and validation tests.
+
+---
+
+## ⚙️ Configuration
+
+| Variable    | Description               | Default                           |
+| ----------- | ------------------------- | --------------------------------- |
+| PORT        | Server port               | 8080                              |
+| MONGODB_URI | MongoDB connection string | mongodb://localhost:27017/todoapp |
+| LOG_LEVEL   | Logging level             | INFO                              |
+
+---
+
+## 🔍 Error Handling
+
+```json
+{
+  "error": "TodoNotFoundException",
+  "message": "Todo not Found",
+  "timestamp": "2024-12-04T14:32:45.584Z"
+}
+```
+
+Custom exceptions:
+
+- `TodoNotFoundException` (404)
+- `TodoInvalidDataException` (400)
+- `TodoMongoException` (500)
+
+---
+
+## 📖 Documentation
+
+- [Swagger UI](http://localhost:8080/swagger)
+- [OpenAPI Spec](http://localhost:8080/openapi)
+
+---
+
+## 🔧 Code Quality
+
+```bash
+./gradlew ktlintCheck
+./gradlew ktlintFormat
+./gradlew detekt
+./gradlew build
+```
+
+---
+
+Happy coding! 🎉 Built with ❤️ using Kotlin and Ktor.

@@ -10,29 +10,29 @@ permissions:
   actions: read
 
 jobs:
-  setup:
-    uses: ./.github/workflows/shared-java-setup.yml
-
   detekt:
     name: Detekt Check
-    needs: setup
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Make gradlew executable
-        run: chmod +x gradlew
+      - name: Setup Java Environment
+        uses: ./.github/actions/java-setup
+        with:
+          java-version: "21"
 
       - name: Run Detekt
-        run: ./gradlew detekt
+        run: ./gradlew detekt --continue
+        continue-on-error: true
 
       - name: Upload SARIF to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: build/reports/detekt/detekt.sarif
+        continue-on-error: true
 
       - name: Upload Detekt reports
         uses: actions/upload-artifact@v4

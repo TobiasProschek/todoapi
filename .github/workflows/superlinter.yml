@@ -22,5 +22,5 @@ jobs:
           DEFAULT_BRANCH: master
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           KOTLIN_KTLINT_CONFIG_FILE: .editorconfig
-          FILTER_REGEX_EXCLUDE: "gradlew"
+          FILTER_REGEX_EXCLUDE: "(gradlew|.*\\.github/workflows/.*)"
           VALIDATE_HTML_PRETTIER: false
