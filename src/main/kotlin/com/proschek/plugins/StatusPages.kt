@@ -15,6 +15,7 @@ import io.ktor.server.request.httpMethod
 import io.ktor.server.request.uri
 import io.ktor.server.response.respond
 import io.ktor.util.logging.Logger
+import kotlinx.serialization.SerializationException
 import org.slf4j.LoggerFactory
 
 /** Configures global exception handling and status page responses. */
@@ -39,22 +40,30 @@ fun StatusPagesConfig.configureBadRequestException(logger: Logger) {
             call.request.uri,
             throwable.message,
         )
-        if (throwable.message?.contains("CreateTodoRequest") == true ||
-            throwable.message?.contains("Status") == true ||
-            throwable.message?.contains("enum") == true
-        ) {
-            call.respond(
-                HttpStatusCode.BadRequest,
-                ErrorResponse(
-                    "Status must be one of: ${Status.entries}",
-                    status = HttpStatusCode.BadRequest.value,
-                ),
-            )
-        } else {
-            call.respond(
-                HttpStatusCode.BadRequest,
-                ErrorResponse("Invalid request format", status = HttpStatusCode.BadRequest.value),
-            )
+
+        when (val cause = throwable.cause) {
+            is SerializationException -> {
+                call.respond(
+                    HttpStatusCode.BadRequest,
+                    ErrorResponse("Invalid request format", status = HttpStatusCode.BadRequest.value),
+                )
+            }
+            else -> {
+                if (cause?.javaClass?.simpleName == "JsonConvertException") {
+                    call.respond(
+                        HttpStatusCode.BadRequest,
+                        ErrorResponse(
+                            "Status must be one of: ${Status.entries}",
+                            status = HttpStatusCode.BadRequest.value,
+                        ),
+                    )
+                } else {
+                    call.respond(
+                        HttpStatusCode.BadRequest,
+                        ErrorResponse("Invalid request format", status = HttpStatusCode.BadRequest.value),
+                    )
+                }
+            }
         }
     }
 }

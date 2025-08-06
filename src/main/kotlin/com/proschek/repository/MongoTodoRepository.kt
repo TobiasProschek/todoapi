@@ -18,7 +18,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 
 /** Repository interface for managing todo items with CRUD operations. */
-interface ITodoRepository {
+interface TodoRepository {
     /** Retrieves all todo items from the repository. */
     suspend fun allTodos(): List<Todo>
 
@@ -39,9 +39,9 @@ interface ITodoRepository {
 }
 
 /** MongoDB implementation of the todo repository for data persistence. */
-class TodoRepository(
+class MongoTodoRepository(
     private val collectionName: String = "todos",
-) : ITodoRepository {
+) : TodoRepository {
     val collection: MongoCollection<Todo> by lazy {
         database.getCollection(collectionName, Todo::class.java)
     }
@@ -57,7 +57,7 @@ class TodoRepository(
         try {
             collection.find(Filters.eq("id", id)).firstOrNull()
         } catch (e: MongoException) {
-            throw TodoMongoException("Failed to get todo using id from database: ${e.message}", e)
+            throw TodoMongoException("Failed to retrieve todo with id '$id' from database: ${e.message}", e)
         }
 
     override suspend fun addTodo(request: CreateTodoRequest): Todo =
@@ -85,9 +85,9 @@ class TodoRepository(
                     ),
                     FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER),
                 )
-            result ?: throw TodoNotFoundException("Todo not Found")
+            result ?: throw TodoNotFoundException("Todo with id '$id' not found")
         } catch (e: MongoException) {
-            throw TodoMongoException("Failed to update Todo in the database: ${e.message}", e)
+            throw TodoMongoException("Failed to update todo with id '$id' in database: ${e.message}", e)
         }
 
     override suspend fun removeTodo(id: String): Boolean =
@@ -95,6 +95,6 @@ class TodoRepository(
             val result = collection.deleteOne(Filters.eq("id", id))
             result.deletedCount == 1L
         } catch (e: MongoException) {
-            throw TodoMongoException("Failed to remove Todo from database: ${e.message}", e)
+            throw TodoMongoException("Failed to remove todo with id '$id' from database: ${e.message}", e)
         }
 }

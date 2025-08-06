@@ -9,7 +9,7 @@ import com.proschek.plugins.configureException
 import com.proschek.plugins.configureTodoInvalidDataException
 import com.proschek.plugins.configureTodoMongoException
 import com.proschek.plugins.configureTodoNotFoundException
-import com.proschek.repository.TodoRepository
+import com.proschek.repository.MongoTodoRepository
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.post
@@ -41,18 +41,18 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class TodoRoutesTest {
-    private lateinit var mockkTodoRepository: TodoRepository
+    private lateinit var mockkMongoTodoRepository: MongoTodoRepository
     private val logger = LoggerFactory.getLogger("StatusPagesTest")
 
     @BeforeTest
     fun setUp() {
-        mockkTodoRepository = mockk<TodoRepository>()
-        clearMocks(mockkTodoRepository)
+        mockkMongoTodoRepository = mockk<MongoTodoRepository>()
+        clearMocks(mockkMongoTodoRepository)
     }
 
     @AfterTest
     fun tearDown() {
-        clearMocks(mockkTodoRepository)
+        clearMocks(mockkMongoTodoRepository)
     }
 
     private fun ApplicationTestBuilder.setupTodoApp() {
@@ -67,7 +67,7 @@ class TodoRoutesTest {
             configureException(logger)
         }
         routing {
-            todoRoutes(mockkTodoRepository)
+            todoRoutes(mockkMongoTodoRepository)
         }
     }
 
@@ -91,7 +91,7 @@ class TodoRoutesTest {
                     createSampleTodo("cd9ee099-988e-45c0-98e1-9d2b90e1a8da"),
                 )
 
-            coEvery { mockkTodoRepository.allTodos() } returns expectedTodos
+            coEvery { mockkMongoTodoRepository.allTodos() } returns expectedTodos
 
             setupTodoApp()
 
@@ -101,7 +101,7 @@ class TodoRoutesTest {
             val actualTodos = Json.decodeFromString<List<Todo>>(response.bodyAsText())
             assertEquals(expectedTodos, actualTodos)
 
-            coVerify { mockkTodoRepository.allTodos() }
+            coVerify { mockkMongoTodoRepository.allTodos() }
         }
 
     @Test
@@ -109,7 +109,7 @@ class TodoRoutesTest {
         testApplication {
             val expectedTodos: Todo? = createSampleTodo("cd9ee099-988e-45c0-98e1-9d2b90e1a8da")
 
-            coEvery { mockkTodoRepository.todoById("cd9ee099-988e-45c0-98e1-9d2b90e1a8da") } returns expectedTodos
+            coEvery { mockkMongoTodoRepository.todoById("cd9ee099-988e-45c0-98e1-9d2b90e1a8da") } returns expectedTodos
 
             setupTodoApp()
 
@@ -121,7 +121,7 @@ class TodoRoutesTest {
             val actualTodo: Todo = Json.decodeFromString(jsonString)
             assertEquals(expectedTodos, actualTodo)
 
-            coVerify { mockkTodoRepository.todoById("cd9ee099-988e-45c0-98e1-9d2b90e1a8da") }
+            coVerify { mockkMongoTodoRepository.todoById("cd9ee099-988e-45c0-98e1-9d2b90e1a8da") }
         }
 
     @Test
@@ -136,7 +136,7 @@ class TodoRoutesTest {
 
             val createdTodo = createSampleTodo("cd9ee099-988e-45c0-98e1-9d2b90e1a8da")
 
-            coEvery { mockkTodoRepository.addTodo(newTestTodoRequest) } returns createdTodo
+            coEvery { mockkMongoTodoRepository.addTodo(newTestTodoRequest) } returns createdTodo
 
             setupTodoApp()
 
@@ -150,7 +150,7 @@ class TodoRoutesTest {
             val actualTodo: Todo = Json.decodeFromString(response.bodyAsText())
             assertEquals(createdTodo, actualTodo)
 
-            coVerify { mockkTodoRepository.addTodo(newTestTodoRequest) }
+            coVerify { mockkMongoTodoRepository.addTodo(newTestTodoRequest) }
         }
 
     @Test
@@ -158,14 +158,14 @@ class TodoRoutesTest {
         testApplication {
             val todoId = "550e8400-e29b-41d4-a716-446655440000"
 
-            coEvery { mockkTodoRepository.removeTodo(todoId) } returns true
+            coEvery { mockkMongoTodoRepository.removeTodo(todoId) } returns true
 
             setupTodoApp()
 
             val response = client.delete("/api/todos/$todoId")
 
             assertEquals(HttpStatusCode.NoContent, response.status)
-            coVerify { mockkTodoRepository.removeTodo(todoId) }
+            coVerify { mockkMongoTodoRepository.removeTodo(todoId) }
         }
 
     @Test
@@ -189,7 +189,7 @@ class TodoRoutesTest {
                     updatedAt = Clock.System.todayIn(TimeZone.UTC),
                 )
 
-            coEvery { mockkTodoRepository.updateTodo(todoId, updateRequest) } returns updatedTodo
+            coEvery { mockkMongoTodoRepository.updateTodo(todoId, updateRequest) } returns updatedTodo
 
             setupTodoApp()
 
@@ -203,7 +203,7 @@ class TodoRoutesTest {
             val actualTodo: Todo = Json.decodeFromString(response.bodyAsText())
             assertEquals(updatedTodo, actualTodo)
 
-            coVerify { mockkTodoRepository.updateTodo(todoId, updateRequest) }
+            coVerify { mockkMongoTodoRepository.updateTodo(todoId, updateRequest) }
         }
 
     @Test
@@ -225,7 +225,7 @@ class TodoRoutesTest {
         testApplication {
             val nonExistentId = "550e8400-e29b-41d4-a716-446655440999"
 
-            coEvery { mockkTodoRepository.todoById(nonExistentId) } returns null
+            coEvery { mockkMongoTodoRepository.todoById(nonExistentId) } returns null
 
             setupTodoApp()
 
@@ -237,7 +237,7 @@ class TodoRoutesTest {
             assertTrue(errorResponse.message.contains("not found", ignoreCase = true))
             assertEquals(404, errorResponse.status)
 
-            coVerify { mockkTodoRepository.todoById(nonExistentId) }
+            coVerify { mockkMongoTodoRepository.todoById(nonExistentId) }
         }
 
     @Test

@@ -4,7 +4,7 @@ import com.proschek.exception.TodoInvalidDataException
 import com.proschek.exception.TodoNotFoundException
 import com.proschek.model.CreateTodoRequest
 import com.proschek.model.Todo
-import com.proschek.repository.TodoRepository
+import com.proschek.repository.MongoTodoRepository
 import com.proschek.utils.toUUIDOrNull
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.receive
@@ -17,53 +17,50 @@ import io.ktor.server.routing.put
 import io.ktor.server.routing.route
 
 /** Configures all todo-related API routes under /api/todos endpoint. */
-fun Route.todoRoutes(todoRepository: TodoRepository) {
+fun Route.todoRoutes(mongoTodoRepository: MongoTodoRepository) {
     route("/api/todos") {
-        getAllTodos(todoRepository)
-        createTodo(todoRepository)
-        getTodoById(todoRepository)
-        updateTodo(todoRepository)
-        deleteTodo(todoRepository)
+        getAllTodos(mongoTodoRepository)
+        createTodo(mongoTodoRepository)
+        getTodoById(mongoTodoRepository)
+        updateTodo(mongoTodoRepository)
+        deleteTodo(mongoTodoRepository)
     }
 }
 
 // GET /api/todos - Get all todos
-private fun Route.getAllTodos(todoRepository: TodoRepository) {
+private fun Route.getAllTodos(mongoTodoRepository: MongoTodoRepository) {
     get {
-        val todos = todoRepository.allTodos()
+        val todos = mongoTodoRepository.allTodos()
         call.respond<List<Todo>>(HttpStatusCode.OK, todos)
     }
 }
 
 // POST /api/todos - Create a new todo
-private fun Route.createTodo(todoRepository: TodoRepository) {
+private fun Route.createTodo(mongoTodoRepository: MongoTodoRepository) {
     post {
         val request = call.receive<CreateTodoRequest>()
         if (request.title.isEmpty()) {
             throw TodoInvalidDataException("Title is required")
         }
 
-        val todo = todoRepository.addTodo(request)
+        val todo = mongoTodoRepository.addTodo(request)
         call.respond(HttpStatusCode.Created, todo)
     }
 }
 
 // GET /api/todos/{id} - Get a specific todo
-private fun Route.getTodoById(todoRepository: TodoRepository) {
+private fun Route.getTodoById(mongoTodoRepository: MongoTodoRepository) {
     get("/{id}") {
         val id = call.parameters["id"].toString()
-        val uuid = id.toUUIDOrNull()
-        if (uuid == null) {
-            throw TodoInvalidDataException("Invalid ID Format")
-        }
+        id.toUUIDOrNull() ?: throw TodoNotFoundException("Invalid ID Format")
 
-        val todo = todoRepository.todoById(id) ?: throw TodoNotFoundException("Todo not Found")
+        val todo = mongoTodoRepository.todoById(id) ?: throw TodoNotFoundException("Todo not Found")
         call.respond(todo)
     }
 }
 
 // DELETE /api/todos/{id} - Delete a specific todo
-private fun Route.deleteTodo(todoRepository: TodoRepository) {
+private fun Route.deleteTodo(mongoTodoRepository: MongoTodoRepository) {
     delete("/{id}") {
         val id = call.parameters["id"].toString()
         val uuid = id.toUUIDOrNull()
@@ -71,7 +68,7 @@ private fun Route.deleteTodo(todoRepository: TodoRepository) {
             throw TodoInvalidDataException("Invalid Todo ID")
         }
 
-        val isDeleted = todoRepository.removeTodo(id)
+        val isDeleted = mongoTodoRepository.removeTodo(id)
         if (isDeleted) {
             call.respond(HttpStatusCode.NoContent)
         } else {
@@ -81,7 +78,7 @@ private fun Route.deleteTodo(todoRepository: TodoRepository) {
 }
 
 // PUT /api/todos/{id} - Update a specific todo
-private fun Route.updateTodo(todoRepository: TodoRepository) {
+private fun Route.updateTodo(mongoTodoRepository: MongoTodoRepository) {
     put("/{id}") {
         val id = call.parameters["id"].toString()
         val uuid = id.toUUIDOrNull()
@@ -91,7 +88,7 @@ private fun Route.updateTodo(todoRepository: TodoRepository) {
         }
         val request = call.receive<CreateTodoRequest>()
 
-        val updatedTodo = todoRepository.updateTodo(id, request)
+        val updatedTodo = mongoTodoRepository.updateTodo(id, request)
         if (updatedTodo != null) {
             call.respond(updatedTodo)
         } else {

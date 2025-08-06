@@ -1,6 +1,6 @@
 package com.proschek.plugins
 
-import com.proschek.repository.TodoRepository
+import com.proschek.repository.MongoTodoRepository
 import com.proschek.routes.todoRoutes
 import io.ktor.server.application.Application
 import io.ktor.server.http.content.staticResources
@@ -23,7 +23,7 @@ fun Application.configureRouting() {
         staticResources("/static", "static")
 
         todoRoutes(
-            todoRepository = TodoRepository(),
+            mongoTodoRepository = MongoTodoRepository(),
         )
     }
 }
