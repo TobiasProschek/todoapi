@@ -52,7 +52,7 @@ private fun Route.createTodo(mongoTodoRepository: MongoTodoRepository) {
 private fun Route.getTodoById(mongoTodoRepository: MongoTodoRepository) {
     get("/{id}") {
         val id = call.parameters["id"].toString()
-        id.toUUIDOrNull() ?: throw TodoNotFoundException("Invalid ID Format")
+        id.toUUIDOrNull() ?: throw TodoInvalidDataException("Invalid ID Format")
 
         val todo = mongoTodoRepository.todoById(id) ?: throw TodoNotFoundException("Todo not Found")
         call.respond(todo)
