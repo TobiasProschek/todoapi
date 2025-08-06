@@ -63,10 +63,7 @@ private fun Route.getTodoById(mongoTodoRepository: MongoTodoRepository) {
 private fun Route.deleteTodo(mongoTodoRepository: MongoTodoRepository) {
     delete("/{id}") {
         val id = call.parameters["id"].toString()
-        val uuid = id.toUUIDOrNull()
-        if (uuid == null) {
-            throw TodoInvalidDataException("Invalid Todo ID")
-        }
+        id.toUUIDOrNull() ?: throw TodoInvalidDataException("Invalid Todo ID")
 
         val isDeleted = mongoTodoRepository.removeTodo(id)
         if (isDeleted) {
@@ -81,11 +78,8 @@ private fun Route.deleteTodo(mongoTodoRepository: MongoTodoRepository) {
 private fun Route.updateTodo(mongoTodoRepository: MongoTodoRepository) {
     put("/{id}") {
         val id = call.parameters["id"].toString()
-        val uuid = id.toUUIDOrNull()
+        id.toUUIDOrNull() ?: throw TodoInvalidDataException("Invalid ID Format")
 
-        if (uuid == null) {
-            throw TodoInvalidDataException("Invalid ID Format")
-        }
         val request = call.receive<CreateTodoRequest>()
 
         val updatedTodo = mongoTodoRepository.updateTodo(id, request)
