@@ -1,0 +1,231 @@
+# detekt.yml - Backend API focused configuration
+
+build:
+  maxIssues: 0
+  excludeCorrectable: false
+
+config:
+  validation: true
+  warningsAsErrors: false
+
+processors:
+  active: true
+
+console-reports:
+  active: true
+  exclude:
+    - "ProjectStatisticsReport"
+
+output-reports:
+  active: true
+  exclude:
+    - "TxtOutputReport"
+
+comments:
+  active: true
+  CommentOverPrivateFunction:
+    active: false
+  CommentOverPrivateProperty:
+    active: false
+  UndocumentedPublicClass:
+    active: true
+  UndocumentedPublicFunction:
+    active: true
+
+complexity:
+  active: true
+  CyclomaticComplexMethod: # ← Updated rule name
+    active: true
+    threshold: 12
+  LongMethod:
+    active: true
+    threshold: 50
+  LongParameterList:
+    active: true
+    functionThreshold: 5
+    constructorThreshold: 6
+    ignoreDataClasses: true
+  TooManyFunctions:
+    active: true
+    thresholdInClasses: 15
+    ignoreDeprecated: false
+    ignorePrivate: false
+
+coroutines:
+  active: true
+  GlobalCoroutineUsage:
+    active: true
+  SleepInsteadOfDelay:
+    active: true
+  SuspendFunWithFlowReturnType:
+    active: true
+
+empty-blocks:
+  active: true
+  EmptyCatchBlock:
+    active: true
+    allowedExceptionNameRegex: "_|(ignore|expected).*"
+  EmptyFunctionBlock:
+    active: true
+    ignoreOverridden: false
+
+exceptions:
+  active: true
+  SwallowedException:
+    active: true
+    allowedExceptionNameRegex: "_|(ignore|expected).*"
+  TooGenericExceptionCaught:
+    active: true
+    excludes: ["**/test/**"]
+    exceptionNames:
+      - "Exception"
+      - "RuntimeException"
+      - "Throwable"
+  ThrowingExceptionsWithoutMessageOrCause:
+    active: true
+    excludes: ["**/test/**"]
+
+naming:
+  active: true
+  ClassNaming:
+    active: true
+    classPattern: "[A-Z][a-zA-Z0-9]*"
+  ConstructorParameterNaming:
+    active: true
+    parameterPattern: "[a-z][A-Za-z0-9]*"
+  EnumNaming:
+    active: true
+    enumEntryPattern: "[A-Z][_a-zA-Z0-9]*"
+  FunctionNaming:
+    active: true
+    functionPattern: "[a-z][a-zA-Z0-9]*"
+    excludeClassPattern: "$^"
+  FunctionParameterNaming:
+    active: true
+    parameterPattern: "[a-z][A-Za-z0-9]*"
+  PackageNaming:
+    active: true
+    packagePattern: "[a-z]+(\\.[a-z][A-Za-z0-9]*)*"
+  TopLevelPropertyNaming:
+    active: true
+    constantPattern: "[A-Z][_A-Z0-9]*"
+    propertyPattern: "[A-Za-z][_A-Za-z0-9]*"
+  VariableNaming:
+    active: true
+    variablePattern: "[a-z][A-Za-z0-9]*"
+
+performance:
+  active: true
+  ArrayPrimitive:
+    active: true
+  CouldBeSequence:
+    active: false
+  ForEachOnRange:
+    active: true
+  SpreadOperator:
+    active: true
+  UnnecessaryTemporaryInstantiation:
+    active: true
+
+potential-bugs:
+  active: true
+  AvoidReferentialEquality:
+    active: true
+  CastToNullableType:
+    active: false
+  Deprecation:
+    active: false
+  DontDowncastCollectionTypes:
+    active: false
+  DoubleMutabilityForCollection:
+    active: true
+  ElseCaseInsteadOfExhaustiveWhen:
+    active: false
+  EqualsAlwaysReturnsTrueOrFalse:
+    active: true
+  EqualsWithHashCodeExist:
+    active: true
+  ExplicitGarbageCollectionCall:
+    active: true
+  HasPlatformType:
+    active: true
+  IgnoredReturnValue:
+    active: true
+  ImplicitDefaultLocale:
+    active: true
+  MapGetWithNotNullAssertionOperator:
+    active: true
+  MissingPackageDeclaration:
+    active: false
+  NullCheckOnMutableProperty:
+    active: false
+  NullableToStringCall:
+    active: false
+  UnconditionalJumpStatementInLoop:
+    active: false
+  UnnecessaryNotNullOperator:
+    active: true
+  UnnecessarySafeCall:
+    active: true
+  UnreachableCatchBlock:
+    active: true
+  UnsafeCallOnNullableType:
+    active: true
+  UnsafeCast:
+    active: true
+  UnusedUnaryOperator:
+    active: true
+  UselessPostfixExpression:
+    active: true
+  WrongEqualsTypeParameter:
+    active: true
+
+style:
+  active: true
+  ClassOrdering:
+    active: false
+  CollapsibleIfStatements:
+    active: false
+  DataClassShouldBeImmutable:
+    active: false
+  DestructuringDeclarationWithTooManyEntries:
+    active: true
+    maxDestructuringEntries: 3
+  EqualsNullCall:
+    active: true
+  EqualsOnSignatureLine:
+    active: true
+  ExplicitCollectionElementAccessMethod:
+    active: false
+  ExplicitItLambdaParameter:
+    active: true
+  ExpressionBodySyntax:
+    active: false
+    includeLineWrapping: false
+  ForbiddenComment:
+    active: true
+    comments: # ← Changed from 'values'
+      - "FIXME:"
+      - "STOPSHIP:"
+      - "TODO:"
+  ForbiddenImport:
+    active: false
+    imports: []
+    forbiddenPatterns: ""
+  ForbiddenMethodCall:
+    active: false
+    methods:
+      - "kotlin.io.print"
+      - "kotlin.io.println"
+  ForbiddenVoid:
+    active: true
+    ignoreOverridden: false
+    ignoreUsageInGenerics: false
+  FunctionOnlyReturningConstant:
+    active: true
+  MaxLineLength:
+    active: true
+    maxLineLength: 150
+    excludePackageStatements: true
+    excludeImportStatements: true
+    excludeCommentStatements: false
