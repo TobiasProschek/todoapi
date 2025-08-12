@@ -6,14 +6,10 @@ import com.proschek.model.CreateTodoRequest
 import com.proschek.model.Status
 import com.typesafe.config.ConfigFactory
 import kotlinx.coroutines.test.runTest
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertNotNull
-import org.junit.jupiter.api.assertNull
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
-import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
-import kotlin.test.assertTrue
 
 class TodoRepositoryTest {
     private lateinit var mongoTodoRepository: MongoTodoRepository
@@ -50,82 +46,89 @@ class TodoRepositoryTest {
         val uri = config.getConfig("ktor").getConfig("mongodb").getString("connectionString")
         val databaseName = config.getConfig("ktor").getConfig("mongodb").getString("databaseName")
 
-        val mongoClient = MongoClient.Factory.create(uri)
+        val mongoClient = MongoClient.create(uri)
         database = mongoClient.getDatabase(databaseName) // Initialize the global variable
     }
 
     @Test
     fun `should create todo successfully and find todo by id`() =
         runTest {
+            // Given
             val todo = createTodoRequest()
-            // When - Create the Todo
+
+            // When
             val createdTodo = mongoTodoRepository.addTodo(todo)
+            val foundTodo = mongoTodoRepository.todoById(createdTodo.id.toString())
 
-            // Then - Verify creation
-            assertNotNull(createdTodo)
-            assertNotNull(createdTodo.id)
-            assertEquals("Test Todo", createdTodo.title)
-
-            // When - Find the created Todo
-            val foundTodo = mongoTodoRepository.todoById(createdTodo.id)
-
-            // Then - Verify retrieval
-            assertNotNull(foundTodo)
-            assertEquals(createdTodo.id, foundTodo.id)
-            assertEquals(createdTodo.title, foundTodo.title)
+            // Then
+            assertThat(createdTodo).isNotNull()
+            assertThat(createdTodo.id).isNotNull()
+            assertThat(createdTodo.title).isEqualTo("Test Todo")
+            assertThat(foundTodo).isEqualTo(createdTodo)
         }
 
     @Test
     fun `should find all todos`() =
         runTest {
-            val todo = createTodoRequest()
-            val createTodoOnes = mongoTodoRepository.addTodo(todo)
-            val createTodoTwice = mongoTodoRepository.addTodo(createTodoRequest("Todo 2"))
+            // Given
+            val todoOne = mongoTodoRepository.addTodo(createTodoRequest())
+            val todoTwo = mongoTodoRepository.addTodo(createTodoRequest("Todo 2"))
 
+            // When
             val foundTodos = mongoTodoRepository.allTodos()
-            val filterTodoOne = foundTodos.filter { it.id == createTodoOnes.id }
-            val filterTodoTwo = foundTodos.filter { it.id == createTodoTwice.id }
 
-            assertEquals(filterTodoOne[0], createTodoOnes)
-            assertEquals(filterTodoTwo[0], createTodoTwice)
-            assertEquals(foundTodos.size, 2)
+            // Then
+            assertThat(foundTodos)
+                .hasSize(2)
+                .contains(todoOne, todoTwo)
         }
 
     @Test
     fun `should find todo by id`() =
         runTest {
-            val todo = createTodoRequest()
-            val createTodoOne = mongoTodoRepository.addTodo(todo)
-            val createTodoTwo = mongoTodoRepository.addTodo(createTodoRequest("Test Todo"))
+            // Given
+            val todoOne = mongoTodoRepository.addTodo(createTodoRequest())
+            val todoTwo = mongoTodoRepository.addTodo(createTodoRequest("Test Todo"))
 
-            assertEquals(mongoTodoRepository.todoById(createTodoOne.id.toString()), createTodoOne)
-            assertEquals(mongoTodoRepository.todoById(createTodoTwo.id.toString()), createTodoTwo)
-            assertNotEquals(mongoTodoRepository.todoById(createTodoOne.id.toString()), createTodoTwo)
+            // When & Then
+            assertThat(mongoTodoRepository.todoById(todoOne.id.toString())).isEqualTo(todoOne)
+            assertThat(mongoTodoRepository.todoById(todoTwo.id.toString())).isEqualTo(todoTwo)
+            assertThat(todoOne).isNotEqualTo(todoTwo)
         }
 
     @Test
     fun `should update todo successfully`() =
         runTest {
-            val createTodo =
-                mongoTodoRepository.addTodo(createTodoRequest("Original title", "Test description", Status.TODO))
-            val updateTodoRequest = createTodoRequest("Updated title", "Test description", Status.DONE)
+            // Given
+            val originalTodo =
+                mongoTodoRepository.addTodo(
+                    createTodoRequest("Original title", "Test description", Status.TODO),
+                )
+            val updateRequest = createTodoRequest("Updated title", "Test description", Status.DONE)
 
-            val updatedTodo = mongoTodoRepository.updateTodo(createTodo.id.toString(), updateTodoRequest)
+            // When
+            val updatedTodo = mongoTodoRepository.updateTodo(originalTodo.id.toString(), updateRequest)
 
-            assertEquals(updatedTodo?.title, "Updated title")
-            assertEquals(updatedTodo?.id, createTodo.id)
-            assertNotEquals(updatedTodo?.status, createTodo.status)
-            assertNotEquals(updatedTodo, createTodo)
+            // Then
+            assertThat(updatedTodo).isNotNull()
+            assertThat(updatedTodo!!.title).isEqualTo("Updated title")
+            assertThat(updatedTodo.id).isEqualTo(originalTodo.id)
+            assertThat(updatedTodo.status).isEqualTo(Status.DONE)
+            assertThat(updatedTodo).isNotEqualTo(originalTodo)
         }
 
     @Test
     fun `should delete todo successfully`() =
         runTest {
-            val createTodo = mongoTodoRepository.addTodo(createTodoRequest())
+            // Given
+            val todo = mongoTodoRepository.addTodo(createTodoRequest())
 
-            val deleteTodo = mongoTodoRepository.removeTodo(createTodo.id.toString())
-            val foundTodo = mongoTodoRepository.todoById(createTodo.id.toString())
-            assertNull(foundTodo)
-            assertTrue(deleteTodo)
+            // When
+            val isDeleted = mongoTodoRepository.removeTodo(todo.id.toString())
+            val foundTodo = mongoTodoRepository.todoById(todo.id.toString())
+
+            // Then
+            assertThat(isDeleted).isTrue()
+            assertThat(foundTodo).isNull()
         }
 }

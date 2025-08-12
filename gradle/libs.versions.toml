@@ -9,6 +9,7 @@ junit = "5.10.1"
 junit-platform = "1.10.1"
 mockk = "1.14.4"
 kotest = "5.7.2"
+assertj = "3.27.3"
 
 [libraries]
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor-version" }
@@ -30,6 +31,7 @@ junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 kotest-assertions-core = { group = "io.kotest", name = "kotest-assertions-core", version.ref = "kotest" }
 kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test" }
+assertj = { module = "org.assertj:assertj-core", name = "assertj", version.ref = "assertj"}
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-version" }

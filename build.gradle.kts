@@ -84,4 +84,5 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotlin.test)
+    testImplementation(libs.assertj)
 }
