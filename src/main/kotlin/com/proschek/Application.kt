@@ -9,12 +9,14 @@ import io.ktor.server.application.Application
 import io.ktor.server.netty.EngineMain
 import org.slf4j.LoggerFactory
 
+/** Application entry point that starts the Ktor server. */
 fun main(args: Array<String>) {
     EngineMain.main(args)
 }
 
 private val logger = LoggerFactory.getLogger("Application")
 
+/** Configures the main application module with HTTP, serialization, and status pages. */
 fun Application.module() {
     configureHTTP()
     configureSerialization()
