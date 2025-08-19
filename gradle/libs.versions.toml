@@ -1,14 +1,14 @@
 
 [versions]
-kotlin-version = "2.2.0"
+kotlin-version = "2.2.10"
 ktor-version = "3.2.3"
 logback-version = "1.5.18"
 mongo-version = "5.5.1"
 kotlinx-datetime = "0.7.1-0.6.x-compat"
 junit = "5.10.1"
-junit-platform = "1.10.1"
+junit-platform = "1.13.4"
 mockk = "1.14.4"
-kotest = "5.7.2"
+kotest = "6.0.0"
 assertj = "3.27.4"
 
 [libraries]
@@ -38,4 +38,4 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-version" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor-version" }
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin-version" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version = "1.23.4" }
-ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "12.1.0" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "13.0.0" }
