@@ -24,3 +24,6 @@ jobs:
           KOTLIN_KTLINT_CONFIG_FILE: .editorconfig
           FILTER_REGEX_EXCLUDE: "(gradlew|.*\\.github/workflows/.*)"
           VALIDATE_HTML_PRETTIER: false
+          LINTER_RULES_PATH: .github/linters
+          HTMLHINT_CONFIG_FILE: .htmlhintrc
+          LOG_LEVEL: DEBUG
