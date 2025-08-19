@@ -9,7 +9,7 @@ junit = "5.10.1"
 junit-platform = "1.10.1"
 mockk = "1.14.4"
 kotest = "5.7.2"
-assertj = "3.27.3"
+assertj = "3.27.4"
 
 [libraries]
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor-version" }
