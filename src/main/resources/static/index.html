@@ -1,9 +1,250 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Hello ktor!</title>
-  </head>
-  <body>
-    <h1>Hello Ktor!</h1>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List Application</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 min-h-screen p-4 sm:p-6 md:p-8 transition-colors duration-200">
+<main class="max-w-4xl mx-auto">
+    <!-- Header Section -->
+    <div class="bg-white dark:bg-gray-800 rounded-t-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-4 flex justify-between items-center">
+        <div>
+            <h1 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-primary-400 mb-2">
+                Todo List
+            </h1>
+            <p class="text-gray-600 dark:text-gray-400">Manage your tasks efficiently</p>
+        </div>
+        <button id="theme-toggle" class="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm">
+            <i class="fas fa-sun hidden dark:inline-block"></i>
+            <i class="fas fa-moon inline-block dark:hidden"></i>
+        </button>
+    </div>
+
+    <!-- Main Content Section -->
+    <div class="bg-white dark:bg-gray-800 rounded-b-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <!-- Add Todo Form -->
+        <form id="todo-form" class="mb-8">
+            <div class="grid gap-6 mb-6">
+                <div>
+                    <label for="todo-title" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                        <i class="fas fa-heading mr-2 text-primary-500"></i>Title
+                    </label>
+                    <input type="text"
+                           id="todo-title"
+                           placeholder="What needs to be done?"
+                           required
+                           class="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-lg shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-400 focus:border-primary-400 transition-all">
+                </div>
+
+                <div>
+                    <label for="todo-description" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                        <i class="fas fa-align-left mr-2 text-primary-500"></i>Description
+                    </label>
+                    <textarea id="todo-description"
+                              placeholder="Add more details about this task..."
+                              rows="3"
+                              required
+                              class="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-lg shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-400 focus:border-primary-400 transition-all"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="todo-status" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                            <i class="fas fa-tasks mr-2 text-primary-500"></i>Status
+                        </label>
+                        <select id="todo-status"
+                                required
+                                class="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-lg shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-400 focus:border-primary-400 transition-all">
+                            <option value="TODO">Todo</option>
+                            <option value="IN_PROGRESS">In Progress</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-end">
+                        <button type="submit"
+                                class="w-full bg-gradient-to-r from-primary-600 to-primary-500 text-white px-6 py-3 rounded-lg hover:from-primary-700 hover:to-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-200 font-semibold shadow-sm">
+                            <i class="fas fa-plus mr-2"></i>Add Task
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <!-- Filter Section -->
+        <div class="mb-8 flex flex-wrap items-center gap-4 bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+            <div class="flex items-center">
+                <i class="fas fa-filter text-primary-500 mr-2"></i>
+                <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">Filter:</label>
+            </div>
+            <select id="status-filter"
+                    class="flex-grow sm:flex-grow-0 px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-lg shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-400 focus:border-primary-400 transition-all text-sm">
+                <option value="ALL">All Tasks</option>
+                <option value="TODO">Todo</option>
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="DONE">Done</option>
+            </select>
+            <div class="hidden sm:flex items-center gap-4 ml-auto text-sm text-gray-500 dark:text-gray-400">
+                <span class="flex items-center gap-2"><i class="fas fa-circle text-todo"></i>Todo</span>
+                <span class="flex items-center gap-2"><i class="fas fa-circle text-inprogress"></i>In Progress</span>
+                <span class="flex items-center gap-2"><i class="fas fa-circle text-done"></i>Done</span>
+            </div>
+        </div>
+
+        <!-- Todo List -->
+        <ul id="todo-list" class="space-y-4"></ul>
+    </div>
+</main>
+
+<!-- Status badge styles and animations -->
+<style>
+    .status-TODO {
+        background-color: rgba(251, 191, 36, 0.15);
+        color: #fbbf24;
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border: 1px solid rgba(251, 191, 36, 0.3);
+    }
+
+    .dark .status-TODO {
+        background-color: rgba(251, 191, 36, 0.1);
+        color: #fbbf24;
+    }
+
+    .status-IN_PROGRESS {
+        background-color: rgba(96, 165, 250, 0.15);
+        color: #60a5fa;
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border: 1px solid rgba(96, 165, 250, 0.3);
+    }
+
+    .dark .status-IN_PROGRESS {
+        background-color: rgba(96, 165, 250, 0.1);
+        color: #60a5fa;
+    }
+
+    .status-DONE {
+        background-color: rgba(34, 197, 94, 0.15);
+        color: #22c55e;
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .dark .status-DONE {
+        background-color: rgba(34, 197, 94, 0.1);
+        color: #22c55e;
+    }
+
+    .todo-item {
+        position: relative;
+    }
+
+    .view-mode, .edit-mode {
+        backface-visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .edit-mode {
+        display: none;
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    .todo-item.editing .view-mode {
+        opacity: 0;
+        transform: translateY(10px);
+        pointer-events: none;
+    }
+
+    .todo-item.editing .edit-mode {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .todo-item {
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .todo-item:not(.editing):hover {
+        transform: translateY(-1px);
+        transition: transform 0.2s ease-out;
+    }
+</style>
+
+<!-- Scripts -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+        darkMode: 'class',
+        theme: {
+            extend: {
+                colors: {
+                    todo: '#fbbf24',
+                    inprogress: '#3b82f6',
+                    done: '#22c55e',
+                    primary: {
+                        50: '#f0f9ff',
+                        100: '#e0f2fe',
+                        200: '#bae6fd',
+                        300: '#7dd3fc',
+                        400: '#38bdf8',
+                        500: '#0ea5e9',
+                        600: '#0284c7',
+                        700: '#0369a1',
+                    }
+                },
+                fontFamily: {
+                    sans: ['Inter', 'system-ui', 'sans-serif'],
+                },
+            }
+        }
+    }
+</script>
+<script src="js/todo.js" defer></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const themeToggle = document.getElementById('theme-toggle');
+
+        // Check for saved theme preference, otherwise use system preference
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        // Toggle theme
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+
+            // Save preference
+            if (document.documentElement.classList.contains('dark')) {
+                localStorage.theme = 'dark';
+            } else {
+                localStorage.theme = 'light';
+            }
+        });
+    });
+</script>
+</body>
 </html>
